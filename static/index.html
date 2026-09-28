@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Question Paper Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0ea5e9;
+            --dark: #0f172a;
+            --slate: #334155;
+            --muted: #64748b;
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+            --shadow-lg: 0 20px 35px -5px rgba(15, 23, 42, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark);
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* Top Navigation Header */
+        header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .brand-text h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            letter-spacing: -0.02em;
+        }
+
+        .brand-text p {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 9999px;
+            background: #ecfdf5;
+            color: #065f46;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        .link-docs {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: var(--primary-light);
+            transition: all 0.2s ease;
+        }
+
+        .link-docs:hover {
+            background: #e0e7ff;
+        }
+
+        /* Container & Layout */
+        .main-container {
+            max-width: 1200px;
+            margin: 28px auto;
+            padding: 0 20px;
+        }
+
+        /* Tabs */
+        .tab-bar {
+            display: flex;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: var(--radius-md);
+            width: fit-content;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 10px 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--dark);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .tab-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Grid */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            margin-bottom: 18px;
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* Upload Zone */
+        .upload-dropzone {
+            border: 2px dashed #cbd5e1;
+            border-radius: var(--radius-md);
+            padding: 28px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .upload-dropzone:hover, .upload-dropzone.dragover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .upload-dropzone input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .file-selected-box {
+            display: none;
+            padding: 12px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: var(--radius-md);
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #1e3a8a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 220px;
+        }
+
+        .file-size {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .btn-remove-file {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-top: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--slate);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+
+        /* Sliders */
+        .slider-row {
+            margin-bottom: 14px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4);
+        }
+
+        /* Table of Sections */
+        .sections-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .sections-table th {
+            background: #f8fafc;
+            padding: 12px 14px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sections-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        .sections-table input[type="number"] {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-section {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            justify-content: center;
+            padding: 10px;
+            background: transparent;
+            border: 1px dashed #cbd5e1;
+            border-radius: var(--radius-md);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-top: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-add-section:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .btn-delete-row {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .btn-delete-row:hover {
+            background: #fef2f2;
+        }
+
+        /* Mode Selector */
+        .mode-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .mode-card {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .mode-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .mode-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .mode-desc {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* Card Footer */
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .total-badge {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .total-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .total-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary);
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, var(--primary), #3730a3);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Progress Card */
+        .progress-card {
+            display: none;
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 28px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .progress-bar-bg {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 9999px;
+            overflow: hidden;
+            margin: 20px 0 12px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            border-radius: 9999px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-status {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--slate);
+        }
+
+        .log-box {
+            background: #0f172a;
+            color: #94a3b8;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.75rem;
+            max-height: 140px;
+            overflow-y: auto;
+            margin-top: 14px;
+        }
+
+        /* Preview Tab */
+        .preview-pane {
+            display: none;
+        }
+
+        .preview-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: var(--dark);
+        }
+
+        .btn-action:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .btn-primary-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary-action:hover {
+            background: var(--primary-hover);
+            color: white;
+        }
+
+        /* Printable Paper View */
+        .paper-sheet {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 48px;
+            box-shadow: var(--shadow-lg);
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .paper-header {
+            text-align: center;
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 18px;
+            margin-bottom: 24px;
+        }
+
+        .paper-school {
+            font-size: 1.4rem;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #0f172a;
+        }
+
+        .paper-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 4px;
+        }
+
+        .paper-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 28px 0 14px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .section-tag {
+            background: #0f172a;
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .section-desc {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .question-item {
+            margin-bottom: 18px;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .q-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .q-text {
+            font-size: 0.98rem;
+            line-height: 1.5;
+            color: #1e293b;
+        }
+
+        .q-mark {
+            font-weight: 700;
+            color: #0f172a;
+            float: right;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-box {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #334155;
+            background: #f8fafc;
+        }
+
+        .badge-diff {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #475569;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #0f172a;
+            color: white;
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            display: none;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* LLM Configuration Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            max-width: 680px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            animation: modalFadeIn 0.25s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+        }
+
+        .modal-header h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--muted);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close-btn:hover {
+            background: #e2e8f0;
+            color: var(--dark);
+        }
+
+        .modal-body {
+            padding: 22px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .prov-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            overflow-x: auto;
+        }
+
+        .prov-tab-btn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--slate);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .prov-tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .prov-card-pane {
+            display: none;
+        }
+
+        .prov-card-pane.active {
+            display: block;
+        }
+
+        .key-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .key-input-wrapper input {
+            padding-right: 42px;
+            width: 100%;
+        }
+
+        .btn-toggle-eye {
+            position: absolute;
+            right: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--muted);
+            padding: 4px;
+        }
+
+        .test-result-box {
+            margin-top: 14px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .test-result-box.success {
+            display: block;
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .test-result-box.error {
+            display: block;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .test-result-box.loading {
+            display: block;
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="brand">
+            <div class="brand-icon">🎓</div>
+            <div class="brand-text">
+                <h1>AI Question Paper Generator</h1>
+                <p>FastAPI Engine • Multi-Format (DOCX &amp; PDF) • Multi-Provider LLMs</p>
+            </div>
+        </div>
+        <div class="nav-links">
+            <button class="link-docs" onclick="openLLMConfigModal()" style="border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                ⚙️ LLM Config
+            </button>
+            <div class="badge-status" id="nav-active-llm-badge">
+                <span class="status-dot"></span>
+                <span id="nav-llm-text">Active: Groq</span>
+            </div>
+            <a href="/docs" target="_blank" class="link-docs">📖 Swagger /docs</a>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <!-- Tab Switching -->
+        <div class="tab-bar">
+            <button class="tab-btn active" id="tab-config-btn" onclick="switchTab('config')">⚙️ Configuration</button>
+            <button class="tab-btn" id="tab-preview-btn" onclick="switchTab('preview')" disabled>📄 Paper Preview</button>
+        </div>
+
+        <!-- CONFIGURATION VIEW -->
+        <div id="view-config">
+            <div class="config-grid">
+                
+                <!-- LEFT COLUMN: PDF & DIFFICULTY -->
+                <div>
+                    <!-- Upload Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">📁 1. Source Material</h2>
+                            <p class="card-desc">Upload your textbook or curriculum (PDF or Word .docx).</p>
+                        </div>
+
+                        <div class="upload-dropzone" id="dropzone">
+                            <input type="file" id="pdf-file-input" accept=".pdf, .docx, application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                            <div class="upload-icon">📄</div>
+                            <p style="font-weight: 600; font-size: 0.9rem;">Click or drag PDF or Word (.docx) here</p>
+                            <p style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">Supports any textbook/notes in PDF or DOCX</p>
+                        </div>
+
+                        <div class="file-selected-box" id="file-box">
+                            <div class="file-info">
+                                <span style="font-size: 1.2rem;" id="file-icon-label">📑</span>
+                                <div>
+                                    <div class="file-name" id="file-name-label">textbook.docx</div>
+                                    <div class="file-size" id="file-size-label">2.4 MB</div>
+                                </div>
+                            </div>
+                            <button class="btn-remove-file" onclick="removeFile()" title="Remove file">✕</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="chapter-input">Target Chapters / Topics</label>
+                            <input type="text" id="chapter-input" class="form-input" value="1" placeholder="e.g. 1, 2 or Thermodynamics, Cell Biology">
+                            <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Comma-separated numbers or topic names</p>
+
+                            <!-- Discovered Markers in Document -->
+                            <div id="detected-markers-container" style="display: none; margin-top: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <span style="font-size: 0.75rem; font-weight: 700; color: #166534;" id="markers-heading-label">
+                                        ✨ Discovered Chapters & Topics in Document:
+                                    </span>
+                                    <span id="markers-count-badge" style="font-size: 0.7rem; color: #15803d; font-weight: 600;"></span>
+                                </div>
+                                <div id="markers-chips-list" style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 120px; overflow-y: auto;">
+                                </div>
+                                <p style="font-size: 0.68rem; color: #15803d; margin-top: 6px;">💡 Click any badge to add it to Target Chapters.</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Difficulty Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">⚖️ 2. Difficulty Balance</h2>
+                            <p class="card-desc">Controls Bloom's taxonomy cognitive depth.</p>
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-header">
+                                <span>Easy</span>
+                                <span id="easy-val">30%</span>
+                            </div>
+                            <input type="range" class="slider" id="easy-slider" min="0" max="100" value="30" step="5" oninput="updateDifficulty('easy', this.value)">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-header">
+                                <span>Medium</span>
+                                <span id="medium-val">40%</span>
+                            </div>
+                            <input type="range" class="slider" id="medium-slider" min="0" max="100" value="40" step="5" oninput="updateDifficulty('medium', this.value)">
+                        </div>
+
+                        <div class="slider-row">
+                            <div class="slider-header">
+                                <span>Hard</span>
+                                <span id="hard-val">30%</span>
+                            </div>
+                            <input type="range" class="slider" id="hard-slider" min="0" max="100" value="30" step="5" oninput="updateDifficulty('hard', this.value)">
+                        </div>
+                    </div>
+
+                    <!-- AI Model Provider Card -->
+                    <div class="card">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h2 class="card-title">🤖 3. AI Model Engine</h2>
+                                <p class="card-desc">Select which LLM provider generates your questions.</p>
+                            </div>
+                            <button type="button" class="btn-action" onclick="openLLMConfigModal()" style="padding: 6px 12px; font-size: 0.8rem; background: var(--primary-light); color: var(--primary); border-color: #c7d2fe;">
+                                ⚙️ Configure Keys
+                            </button>
+                        </div>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label class="form-label" for="llm-provider-select">Inference Provider</label>
+                            <select id="llm-provider-select" class="form-input" style="padding: 10px 12px; font-weight: 600; cursor: pointer; width: 100%; border: 1px solid var(--border); border-radius: 8px;" onchange="onProviderSelectChanged(this.value)">
+                                <option value="groq" selected>⚡ Groq (Ultra-Fast • Llama 3.3 / Qwen)</option>
+                                <option value="openai">🧠 OpenAI (GPT-4o / GPT-4o-mini)</option>
+                                <option value="gemini">✨ Google Gemini (Gemini 1.5 Flash)</option>
+                                <option value="nim">🚀 NVIDIA NIM (Meta Llama 3.1 70B)</option>
+                            </select>
+                            <p style="font-size: 0.72rem; color: var(--muted); margin-top: 6px;" id="provider-status-caption">
+                                Current model: <span id="current-active-model-label" style="font-weight: 600; color: var(--dark);">qwen/qwen3.8-27b</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: SCHEMA CONFIGURATION -->
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">📝 4. Question Paper Sections</h2>
+                            <p class="card-desc">Configure mark categories and question counts.</p>
+                        </div>
+
+                        <table class="sections-table">
+                            <thead>
+                                <tr>
+                                    <th>Mark Value</th>
+                                    <th>Questions Count</th>
+                                    <th>MCQ (4 Options)</th>
+                                    <th style="text-align: right;">Subtotal</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="sections-tbody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+
+                        <button class="btn-add-section" onclick="addSectionRow(1, 5, true)">+ Add Another Section</button>
+
+                        <!-- Execution Mode -->
+                        <div class="form-group" style="margin-top: 24px;">
+                            <label class="form-label">Processing Engine Mode</label>
+                            <div class="mode-container">
+                                <div class="mode-card selected" id="mode-async" onclick="setMode('async')">
+                                    <input type="radio" name="exec_mode" value="async" checked style="margin-top: 3px;">
+                                    <div>
+                                        <div class="mode-title">Async Queue (Plan 2)</div>
+                                        <div class="mode-desc">Background worker + Live Progress + Word/PDF compilation</div>
+                                    </div>
+                                </div>
+                                <div class="mode-card" id="mode-sync" onclick="setMode('sync')">
+                                    <input type="radio" name="exec_mode" value="sync" style="margin-top: 3px;">
+                                    <div>
+                                        <div class="mode-title">Direct Sync</div>
+                                        <div class="mode-desc">Direct request (drop-in replacement for page 6.tsx)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="total-badge">
+                                <span class="total-label">Total Marks Estimate</span>
+                                <span class="total-value" id="grand-total-marks">25 pts</span>
+                            </div>
+
+                            <button class="btn-generate" id="btn-generate" onclick="generatePaper()">
+                                <span>⚡ Generate Paper</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Box (Async) -->
+                    <div class="progress-card" id="progress-card">
+                        <h3 style="font-family: 'Outfit'; font-size: 1.2rem;">Generating Question Paper...</h3>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progress-fill"></div>
+                        </div>
+                        <p class="progress-status" id="progress-status-text">Initializing...</p>
+                        <div class="log-box" id="progress-logs">> Waiting for background worker...</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PREVIEW VIEW -->
+        <div id="view-preview" class="preview-pane">
+            <div class="preview-actions">
+                <button class="btn-action" onclick="switchTab('config')">⬅️ Back to Config</button>
+                <a href="#" class="btn-action btn-primary-action" id="btn-download-docx" target="_blank">📥 Download Word (.docx)</a>
+            </div>
+
+
+            <!-- Paper Sheet -->
+            <div class="paper-sheet" id="paper-sheet-content">
+                <!-- Dynamically Rendered -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">Notification message</div>
+
+    <script>
+        // State
+        let uploadedFile = null;
+        let selectedMode = 'async';
+        let sections = [
+            { markValue: 1, count: 5, isMCQ: true },
+            { markValue: 2, count: 5, isMCQ: false },
+            { markValue: 5, count: 2, isMCQ: false }
+        ];
+        let difficulty = { easy: 30, medium: 40, hard: 30 };
+        let activeTaskId = null;
+        let pollInterval = null;
+        let currentPaperData = null;
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSections();
+            setupDropzone();
+        });
+
+        // Dropzone Setup
+        function setupDropzone() {
+            const dropzone = document.getElementById('dropzone');
+            const fileInput = document.getElementById('pdf-file-input');
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+
+            dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+        }
+
+        function handleFile(file) {
+            const fileName = file.name.toLowerCase();
+            const isPdf = fileName.endsWith('.pdf');
+            const isDocx = fileName.endsWith('.docx');
+
+            if (!isPdf && !isDocx) {
+                showToast('❌ Only PDF and Word (.docx) files are supported.');
+                return;
+            }
+
+            uploadedFile = file;
+            document.getElementById('dropzone').style.display = 'none';
+            const fileBox = document.getElementById('file-box');
+            fileBox.style.display = 'flex';
+            document.getElementById('file-name-label').textContent = file.name;
+            const extLabel = isDocx ? 'Word (.docx)' : 'PDF';
+            document.getElementById('file-size-label').textContent = (file.size / (1024 * 1024)).toFixed(2) + ` MB • ${extLabel}`;
+            document.getElementById('file-icon-label').textContent = isDocx ? '📝' : '📄';
+            showToast(`✅ ${extLabel} loaded: ` + file.name);
+
+            // Auto-discover chapter markers for both DOCX and PDF
+            discoverDocumentMarkers(file);
+        }
+
+        async function discoverDocumentMarkers(file) {
+            const container = document.getElementById('detected-markers-container');
+            const list = document.getElementById('markers-chips-list');
+            const badge = document.getElementById('markers-count-badge');
+
+            container.style.display = 'block';
+            list.innerHTML = '<span style="font-size:0.75rem; color:#15803d;">⏳ Scanning document headings and bookmarks...</span>';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/api/v1/exam/markers', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!res.ok) throw new Error('Marker detection returned error');
+                const markers = await res.json();
+
+                if (!markers || markers.length === 0) {
+                    list.innerHTML = '<span style="font-size:0.75rem; color:#64748b;">No formal headings or bookmarks detected. You can type topic keywords or numbers manually.</span>';
+                    badge.textContent = '0 found';
+                    return;
+                }
+
+                badge.textContent = `${markers.length} chapters found`;
+                list.innerHTML = '';
+
+                markers.forEach(m => {
+                    const chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.style.cssText = 'padding: 4px 8px; font-size: 0.73rem; border-radius: 6px; border: 1px solid #86efac; background: white; color: #166534; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s ease; font-weight: 500;';
+                    
+                    const label = m.number ? `${m.number}. ${m.title}` : m.title;
+                    const pageLabel = m.start_page ? ` (pp. ${m.start_page}-${m.end_page || m.start_page})` : '';
+                    const levelBadge = m.level === 1 ? '🏷️' : '🔹';
+                    chip.innerHTML = `<span>${levelBadge}</span> <span>${label}${pageLabel}</span>`;
+
+                    chip.onmouseover = () => chip.style.background = '#dcfce7';
+                    chip.onmouseout = () => chip.style.background = 'white';
+
+                    chip.onclick = () => {
+                        const chapterInput = document.getElementById('chapter-input');
+                        const current = chapterInput.value.trim();
+                        const queryVal = m.number || m.title;
+
+                        if (!current || current === '1') {
+                            chapterInput.value = queryVal;
+                        } else {
+                            const parts = current.split(',').map(s => s.trim());
+                            if (!parts.includes(queryVal)) {
+                                chapterInput.value = current + ', ' + queryVal;
+                            }
+                        }
+                        showToast(`Added to target chapters: ${queryVal}`);
+                    };
+
+                    const group = document.createElement('div');
+                    group.style.cssText = 'display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px;';
+                    group.appendChild(chip);
+                    if (Array.isArray(m.child_topics) && m.child_topics.length) {
+                        const toggle = document.createElement('button');
+                        toggle.type = 'button';
+                        toggle.textContent = `▸ ${m.child_topics.length} sub-topics`;
+                        toggle.style.cssText = 'border: 0; background: transparent; color: #64748b; font-size: 0.68rem; cursor: pointer; padding: 0 6px;';
+                        const children = document.createElement('div');
+                        children.style.cssText = 'display: none; flex-direction: column; gap: 2px; padding-left: 8px;';
+                        toggle.onclick = () => {
+                            const open = children.style.display === 'flex';
+                            children.style.display = open ? 'none' : 'flex';
+                            toggle.textContent = `${open ? '▸' : '▾'} ${m.child_topics.length} sub-topics`;
+                        };
+                        m.child_topics.forEach(child => {
+                            const childButton = document.createElement('button');
+                            childButton.type = 'button';
+                            childButton.textContent = `${child.number || ''} ${child.title}`.trim();
+                            childButton.style.cssText = 'border: 0; background: transparent; color: #475569; font-size: 0.68rem; cursor: pointer; text-align: left;';
+                            childButton.onclick = () => { document.getElementById('chapter-input').value = child.number || child.title; };
+                            children.appendChild(childButton);
+                        });
+                        group.appendChild(toggle);
+                        group.appendChild(children);
+                    }
+                    list.appendChild(group);
+                });
+            } catch (err) {
+                console.warn('Document markers discovery error:', err);
+                list.innerHTML = '<span style="font-size:0.75rem; color:#64748b;">Could not auto-read headings. You can still type chapter numbers or topic titles manually.</span>';
+            }
+        }
+
+        function removeFile() {
+            uploadedFile = null;
+            document.getElementById('pdf-file-input').value = '';
+            document.getElementById('file-box').style.display = 'none';
+            document.getElementById('dropzone').style.display = 'block';
+            document.getElementById('detected-markers-container').style.display = 'none';
+        }
+
+
+        // Difficulty Sliders
+        function updateDifficulty(changedKey, val) {
+            val = parseInt(val);
+            const others = changedKey === 'easy' ? ['medium', 'hard'] : changedKey === 'medium' ? ['easy', 'hard'] : ['easy', 'medium'];
+            const remaining = 100 - val;
+            const o1 = others[0];
+            const o2 = others[1];
+            const sumOthers = difficulty[o1] + difficulty[o2];
+
+            let newO1, newO2;
+            if (sumOthers === 0) {
+                newO1 = Math.round(remaining / 2);
+                newO2 = remaining - newO1;
+            } else {
+                newO1 = Math.round((difficulty[o1] / sumOthers) * remaining);
+                newO2 = remaining - newO1;
+            }
+
+            difficulty[changedKey] = val;
+            difficulty[o1] = newO1;
+            difficulty[o2] = newO2;
+
+            document.getElementById('easy-slider').value = difficulty.easy;
+            document.getElementById('easy-val').textContent = difficulty.easy + '%';
+            document.getElementById('medium-slider').value = difficulty.medium;
+            document.getElementById('medium-val').textContent = difficulty.medium + '%';
+            document.getElementById('hard-slider').value = difficulty.hard;
+            document.getElementById('hard-val').textContent = difficulty.hard + '%';
+        }
+
+        // Sections
+        function renderSections() {
+            const tbody = document.getElementById('sections-tbody');
+            tbody.innerHTML = '';
+            let totalMarks = 0;
+
+            sections.forEach((sec, idx) => {
+                const subtotal = sec.markValue * sec.count;
+                totalMarks += subtotal;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <input type="number" min="1" value="${sec.markValue}" onchange="updateSection(${idx}, 'markValue', this.value)">
+                    </td>
+                    <td>
+                        <input type="number" min="1" value="${sec.count}" onchange="updateSection(${idx}, 'count', this.value)">
+                    </td>
+                    <td>
+                        ${sec.markValue === 1 ? `
+                            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                                <input type="checkbox" ${sec.isMCQ ? 'checked' : ''} onchange="updateSection(${idx}, 'isMCQ', this.checked)">
+                                <span>MCQ (4 Options)</span>
+                            </label>
+                        ` : '<span style="color:var(--muted);">-</span>'}
+                    </td>
+                    <td style="text-align: right; font-weight: 700; color: var(--primary);">
+                        ${subtotal} pts
+                    </td>
+                    <td style="text-align: right;">
+                        <button class="btn-delete-row" onclick="deleteSectionRow(${idx})" title="Delete Section">✕</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('grand-total-marks').textContent = totalMarks + ' pts';
+        }
+
+        function addSectionRow(markValue = 2, count = 3, isMCQ = false) {
+            sections.push({ markValue, count, isMCQ });
+            renderSections();
+        }
+
+        function deleteSectionRow(idx) {
+            if (sections.length <= 1) {
+                showToast('⚠️ Must keep at least one section');
+                return;
+            }
+            sections.splice(idx, 1);
+            renderSections();
+        }
+
+        function updateSection(idx, field, value) {
+            if (field === 'markValue' || field === 'count') {
+                sections[idx][field] = Math.max(1, parseInt(value) || 1);
+                if (field === 'markValue' && sections[idx].markValue > 1) {
+                    sections[idx].isMCQ = false;
+                }
+            } else if (field === 'isMCQ') {
+                sections[idx].isMCQ = Boolean(value);
+            }
+            renderSections();
+        }
+
+        function setMode(mode) {
+            selectedMode = mode;
+            document.getElementById('mode-async').classList.toggle('selected', mode === 'async');
+            document.getElementById('mode-sync').classList.toggle('selected', mode === 'sync');
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            document.getElementById('tab-config-btn').classList.toggle('active', tab === 'config');
+            document.getElementById('tab-preview-btn').classList.toggle('active', tab === 'preview');
+            document.getElementById('view-config').style.display = tab === 'config' ? 'block' : 'none';
+            document.getElementById('view-preview').style.display = tab === 'preview' ? 'block' : 'none';
+        }
+
+        // Generate Execution
+        async function generatePaper() {
+            if (!uploadedFile) {
+                showToast('⚠️ Please upload a textbook (PDF or Word .docx) first!');
+                return;
+            }
+
+            const chapters = document.getElementById('chapter-input').value.trim() || '1';
+
+            const formData = new FormData();
+            formData.append('file', uploadedFile);
+            formData.append('chapters', chapters);
+            formData.append('markConfig', JSON.stringify(sections));
+            formData.append('difficultyConfig', JSON.stringify(difficulty));
+            const providerVal = document.getElementById('llm-provider-select') ? document.getElementById('llm-provider-select').value : 'groq';
+            formData.append('provider', providerVal);
+
+            const btn = document.getElementById('btn-generate');
+            btn.disabled = true;
+
+            const progressCard = document.getElementById('progress-card');
+            const progressFill = document.getElementById('progress-fill');
+            const progressStatus = document.getElementById('progress-status-text');
+            const progressLogs = document.getElementById('progress-logs');
+
+            progressCard.style.display = 'block';
+            progressFill.style.width = '10%';
+            progressStatus.textContent = 'Uploading source document...';
+            progressLogs.innerHTML = `> [${new Date().toLocaleTimeString()}] Submitting request to FastAPI (${providerVal.toUpperCase()})...<br>`;
+
+            try {
+                if (selectedMode === 'async') {
+                    // ASYNC TASK QUEUE (Plan 2)
+                    const res = await fetch('/api/v1/exam-papers/generate-async', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.details || err.detail || err.error || 'Failed to enqueue task');
+                    }
+
+                    const data = await res.json();
+                    activeTaskId = data.task_id;
+                    progressLogs.innerHTML += `> Task ID: ${activeTaskId}<br>> Status: Enqueued (${providerVal.toUpperCase()}). Starting background polling...<br>`;
+                    pollTaskProgress(activeTaskId, chapters);
+
+                } else {
+                    // SYNC DROP-IN (page 6.tsx equivalent)
+                    progressFill.style.width = '50%';
+                    progressStatus.textContent = `Generating questions with ${providerVal.toUpperCase()} Engine (Sync)...`;
+                    progressLogs.innerHTML += `> Waiting for ${providerVal.toUpperCase()} model completion...<br>`;
+
+                    const res = await fetch('/api/exam/generate-questions', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.details || err.detail || err.error || 'Sync generation failed');
+                    }
+
+                    const paper = await res.json();
+                    progressFill.style.width = '100%';
+                    progressStatus.textContent = 'Question Paper Complete!';
+                    currentPaperData = paper;
+                    renderPaperPreview(paper, chapters);
+                    btn.disabled = false;
+                }
+
+            } catch (err) {
+                console.error(err);
+                progressStatus.textContent = '❌ Generation Failed';
+                progressLogs.innerHTML += `<span style="color:#ef4444;">> ERROR: ${err.message}</span><br>`;
+                showToast('❌ ' + err.message);
+                btn.disabled = false;
+            }
+        }
+
+        // Polling loop for Plan 2
+        function pollTaskProgress(taskId, chapters) {
+            const progressFill = document.getElementById('progress-fill');
+            const progressStatus = document.getElementById('progress-status-text');
+            const progressLogs = document.getElementById('progress-logs');
+            const btn = document.getElementById('btn-generate');
+
+            if (pollInterval) clearInterval(pollInterval);
+
+            pollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/v1/tasks/${taskId}`);
+                    if (!res.ok) throw new Error('Polling error');
+                    const task = await res.json();
+
+                    progressStatus.textContent = `[${task.status}] ${task.message}`;
+
+                    if (task.status !== 'FAILED') {
+                        progressFill.style.width = task.progress + '%';
+                    }
+
+                    if (task.logs && task.logs.length) {
+                        progressLogs.innerHTML = task.logs.map(l => `> ${l}`).join('<br>');
+                        progressLogs.scrollTop = progressLogs.scrollHeight;
+                    }
+
+                    if (task.status === 'COMPLETED') {
+                        clearInterval(pollInterval);
+                        btn.disabled = false;
+                        showToast('🎉 Question Paper Generated Successfully!');
+
+                        currentPaperData = task.result;
+                        // Set download link
+                        document.getElementById('btn-download-docx').href = `/api/v1/tasks/${taskId}/download/docx`;
+
+                        renderPaperPreview(task.result, chapters);
+
+                    } else if (task.status === 'FAILED') {
+                        clearInterval(pollInterval);
+                        btn.disabled = false;
+                        progressStatus.textContent = '❌ Task Failed';
+                        progressFill.style.width = '0%';
+                        progressLogs.innerHTML = `<span style="color:#ef4444;">${escapeHtml(task.error || 'Unknown error')}</span>`;
+                    }
+                } catch (e) {
+                    console.error('Poll failed:', e);
+                }
+            }, 1000);
+        }
+
+        // Render Generated Paper
+        function renderPaperPreview(paper, chapters) {
+            document.getElementById('tab-preview-btn').disabled = false;
+            switchTab('preview');
+
+            const container = document.getElementById('paper-sheet-content');
+            let html = `
+                <div class="paper-header">
+                    <div class="paper-school">EXAMINATION ASSESSMENT</div>
+                    <div class="paper-title">${escapeHtml(paper.title)}</div>
+                    <div class="paper-meta">
+                        <span>Chapters: ${escapeHtml(chapters)}</span>
+                        <span>Time Allowed: 3 Hours</span>
+                        <span>Max Marks: ${paper.totalMarks}</span>
+                    </div>
+                </div>
+            `;
+
+
+            let qIndex = 1;
+            paper.sections.forEach((sec, sIdx) => {
+                const secChar = String.fromCharCode(65 + sIdx);
+                html += `
+                    <div class="section-header">
+                        <span class="section-tag">SECTION ${secChar}</span>
+                        <span class="section-desc">Each question carries ${sec.markValue} Mark(s)</span>
+                    </div>
+                `;
+
+                sec.questions.forEach((q) => {
+                    html += `
+                        <div class="question-item">
+                            <span class="q-number">${qIndex}.</span>
+                            <span class="q-mark">[${sec.markValue}]</span>
+                            <div class="q-text">${escapeHtml(q.text)}</div>
+                    `;
+
+                    if (q.type === 'MCQ' && q.options && q.options.length) {
+                        html += '<div class="options-grid">';
+                        q.options.forEach(opt => {
+                            const clean = opt.replace('*', '').trim();
+                            html += `<div class="option-box">${escapeHtml(clean)}</div>`;
+                        });
+                        html += '</div>';
+                    }
+
+                    html += `
+                            <div>
+                                <span class="badge-diff">${q.difficulty}</span>
+                                <span class="badge-diff" style="margin-left:4px;">${escapeHtml(q.topic)}</span>
+                            </div>
+                        </div>
+                    `;
+                    qIndex++;
+                });
+            });
+
+            container.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 4000);
+        }
+
+        // ========================================================
+        // LLM CONFIGURATION MODAL & API LOGIC
+        // ========================================================
+        let llmConfigData = null;
+        let currentModalTab = 'groq';
+
+        async function fetchLLMConfig() {
+            try {
+                const res = await fetch('/api/v1/config/llm');
+                if (!res.ok) return;
+                llmConfigData = await res.json();
+                applyConfigToUI(llmConfigData);
+            } catch (err) {
+                console.warn('Could not fetch LLM config:', err);
+            }
+        }
+
+        function applyConfigToUI(data) {
+            if (!data) return;
+
+            // Update active provider select on the main page
+            const provSelect = document.getElementById('llm-provider-select');
+            if (provSelect) {
+                provSelect.value = data.active_provider;
+            }
+
+            // Update top navigation badge
+            const navText = document.getElementById('nav-llm-text');
+            if (navText) {
+                const provName = data.active_provider.toUpperCase();
+                const activeModel = data.providers[data.active_provider]?.model || '';
+                navText.textContent = `Active: ${provName}`;
+            }
+
+            // Update caption
+            const activeModel = data.providers[data.active_provider]?.model || '';
+            const caption = document.getElementById('current-active-model-label');
+            if (caption) {
+                caption.textContent = activeModel;
+            }
+
+            // Populate modal inputs and status badges
+            ['groq', 'openai', 'gemini', 'nim'].forEach(prov => {
+                const info = data.providers[prov];
+                if (!info) return;
+
+                const badge = document.getElementById(`badge-cfg-${prov}`);
+                if (badge) {
+                    if (info.configured) {
+                        badge.textContent = `Configured (${info.masked_key || 'Active'})`;
+                        badge.style.background = '#ecfdf5';
+                        badge.style.color = '#065f46';
+                    } else {
+                        badge.textContent = 'Not Configured';
+                        badge.style.background = '#f1f5f9';
+                        badge.style.color = '#64748b';
+                    }
+                }
+
+                const modelInput = document.getElementById(`model-input-${prov}`);
+                if (modelInput && info.model) {
+                    modelInput.value = info.model;
+                }
+
+                if (prov === 'nim' && info.base_url) {
+                    const urlInput = document.getElementById('nim-base-url-input');
+                    if (urlInput) urlInput.value = info.base_url;
+                }
+            });
+        }
+
+        function openLLMConfigModal() {
+            document.getElementById('llm-config-modal').style.display = 'flex';
+            if (llmConfigData && llmConfigData.active_provider) {
+                switchProviderTab(llmConfigData.active_provider);
+            }
+        }
+
+        function closeLLMConfigModal() {
+            document.getElementById('llm-config-modal').style.display = 'none';
+        }
+
+        function switchProviderTab(prov) {
+            currentModalTab = prov;
+            document.querySelectorAll('.prov-tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.prov === prov);
+            });
+            document.querySelectorAll('.prov-card-pane').forEach(pane => {
+                pane.classList.toggle('active', pane.id === `pane-${prov}`);
+            });
+            // Clear test boxes
+            document.querySelectorAll('.test-result-box').forEach(b => {
+                b.className = 'test-result-box';
+                b.textContent = '';
+                b.style.display = 'none';
+            });
+        }
+
+        function toggleKeyVisibility(inputId, btnId) {
+            const input = document.getElementById(inputId);
+            const btn = document.getElementById(btnId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+
+        function onPresetSelect(prov, val) {
+            if (!val) return;
+            const modelInput = document.getElementById(`model-input-${prov}`);
+            if (modelInput) modelInput.value = val;
+        }
+
+        function onProviderSelectChanged(val) {
+            if (llmConfigData && llmConfigData.providers[val]) {
+                const model = llmConfigData.providers[val].model;
+                const caption = document.getElementById('current-active-model-label');
+                if (caption) caption.textContent = model;
+            }
+        }
+
+        async function testProviderConnection(prov) {
+            const resultBox = document.getElementById(`test-result-${prov}`);
+            resultBox.className = 'test-result-box loading';
+            resultBox.textContent = `⏳ Testing connection to ${prov.toUpperCase()}...`;
+
+            const keyInput = document.getElementById(`key-input-${prov}`);
+            const modelInput = document.getElementById(`model-input-${prov}`);
+            const nimUrlInput = document.getElementById('nim-base-url-input');
+
+            const payload = {
+                provider: prov,
+                api_key: keyInput && keyInput.value ? keyInput.value.trim() : null,
+                model: modelInput && modelInput.value ? modelInput.value.trim() : null,
+                base_url: (prov === 'nim' && nimUrlInput && nimUrlInput.value) ? nimUrlInput.value.trim() : null
+            };
+
+            try {
+                const res = await fetch('/api/v1/config/llm/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    resultBox.className = 'test-result-box success';
+                    resultBox.textContent = `✅ ${data.message}`;
+                } else {
+                    resultBox.className = 'test-result-box error';
+                    resultBox.textContent = `❌ ${data.message}`;
+                }
+            } catch (err) {
+                resultBox.className = 'test-result-box error';
+                resultBox.textContent = `❌ Network Error: ${err.message}`;
+            }
+        }
+
+        function setActiveProviderFromModal(prov) {
+            const selectEl = document.getElementById('modal-active-provider-select');
+            if (selectEl) selectEl.value = prov;
+            showToast(`Selected ${prov.toUpperCase()} as active provider.`);
+        }
+
+        async function saveLLMConfig() {
+            const saveBtn = document.getElementById('btn-save-llm-config');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            const activeProv = document.getElementById('modal-active-provider-select').value;
+            const payload = {
+                active_provider: activeProv
+            };
+
+            ['groq', 'openai', 'gemini', 'nim'].forEach(prov => {
+                const keyInput = document.getElementById(`key-input-${prov}`);
+                const modelInput = document.getElementById(`model-input-${prov}`);
+                if (keyInput && keyInput.value.trim()) {
+                    payload[`${prov}_api_key`] = keyInput.value.trim();
+                }
+                if (modelInput && modelInput.value.trim()) {
+                    payload[`${prov}_model`] = modelInput.value.trim();
+                }
+            });
+
+            const nimUrlInput = document.getElementById('nim-base-url-input');
+            if (nimUrlInput && nimUrlInput.value.trim()) {
+                payload['nim_base_url'] = nimUrlInput.value.trim();
+            }
+
+            try {
+                const res = await fetch('/api/v1/config/llm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || 'Failed to save configuration');
+                }
+                llmConfigData = await res.json();
+                applyConfigToUI(llmConfigData);
+                showToast('✅ Configuration saved and active provider updated!');
+                closeLLMConfigModal();
+            } catch (err) {
+                showToast(`❌ Error: ${err.message}`);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 Save Settings';
+            }
+        }
+
+        // Initialize LLM config on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchLLMConfig();
+        });
+    </script>
+
+    <!-- ======================================================== -->
+    <!-- LLM CONFIGURATION MODAL DIALOG                           -->
+    <!-- ======================================================== -->
+    <div class="modal-overlay" id="llm-config-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>⚙️ AI Model Engines & API Keys</h3>
+                <button class="modal-close-btn" onclick="closeLLMConfigModal()" title="Close">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Navigation Tabs -->
+                <div class="prov-nav">
+                    <button type="button" class="prov-tab-btn active" data-prov="groq" onclick="switchProviderTab('groq')">⚡ Groq</button>
+                    <button type="button" class="prov-tab-btn" data-prov="openai" onclick="switchProviderTab('openai')">🧠 OpenAI</button>
+                    <button type="button" class="prov-tab-btn" data-prov="gemini" onclick="switchProviderTab('gemini')">✨ Google Gemini</button>
+                    <button type="button" class="prov-tab-btn" data-prov="nim" onclick="switchProviderTab('nim')">🚀 NVIDIA NIM</button>
+                </div>
+
+                <!-- 1. GROQ PANE -->
+                <div class="prov-card-pane active" id="pane-groq">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-weight: 700; color: var(--dark);">⚡ Groq Cloud LPU</span>
+                        <span id="badge-cfg-groq" style="font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Checking...</span>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Groq API Key</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="key-input-groq" class="form-input" placeholder="Enter gsk_... or leave empty to keep current">
+                            <button type="button" id="eye-btn-groq" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-groq', 'eye-btn-groq')">👁️</button>
+                        </div>
+                        <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Get your key from <a href="https://console.groq.com/keys" target="_blank" style="color: var(--primary);">console.groq.com</a></p>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Model Presets</label>
+                        <select class="form-input" onchange="onPresetSelect('groq', this.value)" style="margin-bottom: 6px;">
+                            <option value="">-- Choose preset model --</option>
+                            <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b (Default Recommended)</option>
+                            <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+                            <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                            <option value="gemma2-9b-it">gemma2-9b-it</option>
+                        </select>
+                        <input type="text" id="model-input-groq" class="form-input" value="qwen/qwen3.8-27b" placeholder="Model identifier">
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-action" onclick="testProviderConnection('groq')">🔌 Test Connection</button>
+                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('groq')">⭐ Set Active</button>
+                    </div>
+                    <div id="test-result-groq" class="test-result-box"></div>
+                </div>
+
+                <!-- 2. OPENAI PANE -->
+                <div class="prov-card-pane" id="pane-openai">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-weight: 700; color: var(--dark);">🧠 OpenAI API</span>
+                        <span id="badge-cfg-openai" style="font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Checking...</span>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">OpenAI API Key</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="key-input-openai" class="form-input" placeholder="sk-proj-...">
+                            <button type="button" id="eye-btn-openai" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-openai', 'eye-btn-openai')">👁️</button>
+                        </div>
+                        <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Get your key from <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--primary);">platform.openai.com</a></p>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Model Presets</label>
+                        <select class="form-input" onchange="onPresetSelect('openai', this.value)" style="margin-bottom: 6px;">
+                            <option value="">-- Choose preset model --</option>
+                            <option value="gpt-4o-mini">gpt-4o-mini (Fast & Cost-Efficient)</option>
+                            <option value="gpt-4o">gpt-4o (High-Precision Academic Reasoning)</option>
+                            <option value="gpt-4-turbo">gpt-4-turbo</option>
+                            <option value="o1-mini">o1-mini</option>
+                        </select>
+                        <input type="text" id="model-input-openai" class="form-input" value="gpt-4o-mini" placeholder="Model identifier">
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-action" onclick="testProviderConnection('openai')">🔌 Test Connection</button>
+                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('openai')">⭐ Set Active</button>
+                    </div>
+                    <div id="test-result-openai" class="test-result-box"></div>
+                </div>
+
+                <!-- 3. GEMINI PANE -->
+                <div class="prov-card-pane" id="pane-gemini">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-weight: 700; color: var(--dark);">✨ Google Gemini API</span>
+                        <span id="badge-cfg-gemini" style="font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Checking...</span>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Google Gemini API Key</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="key-input-gemini" class="form-input" placeholder="AIzaSy...">
+                            <button type="button" id="eye-btn-gemini" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-gemini', 'eye-btn-gemini')">👁️</button>
+                        </div>
+                        <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary);">aistudio.google.com</a></p>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Model Presets</label>
+                        <select class="form-input" onchange="onPresetSelect('gemini', this.value)" style="margin-bottom: 6px;">
+                            <option value="">-- Choose preset model --</option>
+                            <option value="gemini-1.5-flash">gemini-1.5-flash (Recommended)</option>
+                            <option value="gemini-1.5-pro">gemini-1.5-pro (Complex Analytical)</option>
+                            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                        </select>
+                        <input type="text" id="model-input-gemini" class="form-input" value="gemini-1.5-flash" placeholder="Model identifier">
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-action" onclick="testProviderConnection('gemini')">🔌 Test Connection</button>
+                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('gemini')">⭐ Set Active</button>
+                    </div>
+                    <div id="test-result-gemini" class="test-result-box"></div>
+                </div>
+
+                <!-- 4. NVIDIA NIM PANE -->
+                <div class="prov-card-pane" id="pane-nim">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-weight: 700; color: var(--dark);">🚀 NVIDIA NIM (Cloud or On-Prem)</span>
+                        <span id="badge-cfg-nim" style="font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Checking...</span>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">NVIDIA API Key</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="key-input-nim" class="form-input" placeholder="nvapi-...">
+                            <button type="button" id="eye-btn-nim" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-nim', 'eye-btn-nim')">👁️</button>
+                        </div>
+                        <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Get your key from <a href="https://build.nvidia.com" target="_blank" style="color: var(--primary);">build.nvidia.com</a></p>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">NIM Base URL</label>
+                        <input type="text" id="nim-base-url-input" class="form-input" value="https://integrate.api.nvidia.com/v1" placeholder="https://integrate.api.nvidia.com/v1 or http://localhost:8000/v1">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Model Presets</label>
+                        <select class="form-input" onchange="onPresetSelect('nim', this.value)" style="margin-bottom: 6px;">
+                            <option value="">-- Choose preset model --</option>
+                            <option value="meta/llama-3.1-70b-instruct">meta/llama-3.1-70b-instruct (Recommended)</option>
+                            <option value="mistralai/mixtral-8x22b-instruct">mistralai/mixtral-8x22b-instruct</option>
+                            <option value="nvidia/llama-3.1-nemotron-70b-instruct">nvidia/llama-3.1-nemotron-70b-instruct</option>
+                        </select>
+                        <input type="text" id="model-input-nim" class="form-input" value="meta/llama-3.1-70b-instruct" placeholder="Model identifier">
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-action" onclick="testProviderConnection('nim')">🔌 Test Connection</button>
+                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('nim')">⭐ Set Active</button>
+                    </div>
+                    <div id="test-result-nim" class="test-result-box"></div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.82rem; font-weight: 600; color: var(--slate);">Active Provider:</span>
+                    <select id="modal-active-provider-select" class="form-input" style="padding: 6px 10px; font-size: 0.82rem; width: auto; font-weight: 600;">
+                        <option value="groq">⚡ Groq</option>
+                        <option value="openai">🧠 OpenAI</option>
+                        <option value="gemini">✨ Gemini</option>
+                        <option value="nim">🚀 NVIDIA NIM</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-action" onclick="closeLLMConfigModal()">Cancel</button>
+                    <button type="button" class="btn-action btn-primary-action" id="btn-save-llm-config" onclick="saveLLMConfig()">💾 Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
