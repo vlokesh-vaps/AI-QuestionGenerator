@@ -29,12 +29,12 @@ python run.py
 ```
 Or with Uvicorn:
 ```bash
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8050
 ```
 
 ### 4. Interactive Swagger Documentation
 Open your browser at:
-👉 **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)**
+👉 **[http://127.0.0.1:8050/docs](http://127.0.0.1:8050/docs)**
 
 ---
 
@@ -71,7 +71,7 @@ pages without extractable text require OCR.
 
 ### Direct Sync Test
 ```bash
-curl -X POST "http://127.0.0.1:8000/api/exam/generate-questions" \
+curl -X POST "http://127.0.0.1:8050/api/exam/generate-questions" \
   -F "file=@sample_textbook.pdf" \
   -F "chapters=1" \
   -F 'markConfig=[{"markValue":1,"count":5,"isMCQ":true},{"markValue":2,"count":3,"isMCQ":false},{"markValue":5,"count":2,"isMCQ":false}]' \
@@ -81,14 +81,14 @@ curl -X POST "http://127.0.0.1:8000/api/exam/generate-questions" \
 ### Async Task & Download Test
 ```bash
 # 1. Enqueue task
-curl -X POST "http://127.0.0.1:8000/api/v1/exam-papers/generate-async" \
+curl -X POST "http://127.0.0.1:8050/api/v1/exam-papers/generate-async" \
   -F "file=@sample_textbook.pdf" \
   -F "chapters=1, 2" \
   -F 'markConfig=[{"markValue":1,"count":5,"isMCQ":true},{"markValue":5,"count":2,"isMCQ":false}]'
 
 # 2. Poll status (replace {task_id} with returned id)
-curl "http://127.0.0.1:8000/api/v1/tasks/{task_id}"
+curl "http://127.0.0.1:8050/api/v1/tasks/{task_id}"
 
 # 3. Download Word Document
-curl -O -J "http://127.0.0.1:8000/api/v1/tasks/{task_id}/download/docx"
+curl -O -J "http://127.0.0.1:8050/api/v1/tasks/{task_id}/download/docx"
 ```

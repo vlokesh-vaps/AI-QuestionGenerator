@@ -112,7 +112,7 @@ python -m pytest
 
 `pypdf` is required by the API tests and is included in `requirements.txt`. Run commands with the project virtual environment active (`.venv\Scripts\Activate.ps1` on Windows); using a different global Python installation can produce misleading missing-module errors.
 
-The API documentation is available at `http://127.0.0.1:8000/docs` when the server is running. Configure only the provider credentials you need. Never put real API keys in source, tests, documentation, or commits; do not read or disclose local `.env` values.
+The API documentation is available at `http://127.0.0.1:8050/docs` when the server is running. Configure only the provider credentials you need. Never put real API keys in source, tests, documentation, or commits; do not read or disclose local `.env` values.
 
 ## Coding workflow
 
