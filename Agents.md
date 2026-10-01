@@ -23,6 +23,7 @@ This repository contains a Python/FastAPI backend for generating exam question p
 | Path | Responsibility |
 |---|---|
 | `run.py` | Starts the Uvicorn development server using `HOST`, `PORT`, and `DEBUG`. |
+| `Dockerfile` / `.dockerignore` | Builds and packages the API image for container deployment on port 8050. |
 | `app/main.py` | Creates the FastAPI app, configures CORS/static UI, mounts routers, and exposes health status. |
 | `app/api/v1/router.py` | Collects versioned API endpoint routers. |
 | `app/api/v1/endpoints/exam_paper.py` | Validates upload/configuration, discovers markers, and coordinates synchronous or background paper generation. |
@@ -111,6 +112,15 @@ python -m pytest
 ```
 
 `pypdf` is required by the API tests and is included in `requirements.txt`. Run commands with the project virtual environment active (`.venv\Scripts\Activate.ps1` on Windows); using a different global Python installation can produce misleading missing-module errors.
+
+### Docker setup
+
+```powershell
+docker build -t ai-question-generator:latest .
+docker run --rm --name ai-question-generator --env-file .env -p 8050:8050 ai-question-generator:latest
+```
+
+The image uses Python 3.11, runs as non-root `appuser`, excludes `.env` and runtime storage contents, and clears/recreates disposable runtime storage on startup.
 
 The API documentation is available at `http://127.0.0.1:8050/docs` when the server is running. Configure only the provider credentials you need. Never put real API keys in source, tests, documentation, or commits; do not read or disclose local `.env` values.
 

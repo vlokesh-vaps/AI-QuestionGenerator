@@ -7,6 +7,19 @@ select a chapter number or title, extracts only that selected content, and creat
 questions from the extracted educational content. Large documents are processed
 with configured file/page limits and token-sized LLM chunks.
 
+## Docker
+
+Build and run the image from the repository root:
+
+```bash
+docker build -t ai-question-generator:latest .
+docker run --rm --name ai-question-generator --env-file .env -p 8050:8050 ai-question-generator:latest
+```
+
+The image exposes port `8050`, runs as a non-root user, and excludes `.env`
+from the image. Runtime storage is cleared and recreated on application
+startup, so uploads, exports, and marker caches are ephemeral.
+
 ---
 
 ## ⚡ Quick Start
