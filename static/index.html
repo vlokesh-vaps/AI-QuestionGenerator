@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="app-base" content="">
+    <script>
+        window.__APP_CONFIG__ = window.__APP_CONFIG__ || { basePath: "" };
+    </script>
     <title>AI Question Paper Generator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,185 +23,356 @@
             --light-bg: #f8fafc;
             --card-bg: #ffffff;
             --border: #e2e8f0;
-            --success: #10b981;
-            --danger: #ef4444;
-            --radius-lg: 16px;
+            --border-focus: #818cf8;
+            --success: #16a34a;
+            --success-light: #f0fdf4;
+            --success-border: #bbf7d0;
+            --warning: #d97706;
+            --warning-light: #fffbeb;
+            --warning-border: #fde68a;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --danger-border: #fecaca;
+            --radius-sm: 6px;
             --radius-md: 10px;
-            --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-            --shadow-lg: 0 20px 35px -5px rgba(15, 23, 42, 0.12);
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+            --shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06);
+            --shadow-lg: 0 16px 36px -4px rgba(15, 23, 42, 0.1);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
             background-color: var(--light-bg);
             color: var(--dark);
             min-height: 100vh;
-            padding-bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
         }
 
-        /* Top Navigation Header */
+        /* Top Header */
         header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
+            background: #ffffff;
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 50;
-            padding: 14px 28px;
+            padding: 12px 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            box-shadow: var(--shadow-sm);
         }
 
-        .brand {
+        .brand-container {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .brand-icon {
-            width: 40px;
-            height: 40px;
+        .brand-logo {
+            width: 42px;
+            height: 42px;
             border-radius: 10px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 800;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+            flex-shrink: 0;
         }
 
-        .brand-text h1 {
+        .brand-titles h1 {
             font-family: 'Outfit', sans-serif;
             font-size: 1.25rem;
             font-weight: 700;
             color: var(--dark);
             letter-spacing: -0.02em;
+            line-height: 1.2;
         }
 
-        .brand-text p {
-            font-size: 0.75rem;
+        .brand-titles p {
+            font-size: 0.78rem;
             color: var(--muted);
             font-weight: 500;
         }
 
-        .nav-links {
+        .header-actions {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 10px;
         }
 
-        .badge-status {
-            padding: 6px 12px;
-            border-radius: 9999px;
-            background: #ecfdf5;
-            color: #065f46;
+        .header-ai-suite {
+            display: inline-flex;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 3px 6px;
+            gap: 8px;
+        }
+
+        .header-ai-label {
             font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding-left: 4px;
+        }
+
+        .header-llm-select {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 0.82rem;
             font-weight: 600;
+            color: var(--dark);
+            cursor: pointer;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+
+        .header-llm-select:hover {
+            border-color: #cbd5e1;
+        }
+
+        .header-llm-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .header-model-pill {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            border: 1px solid #a7f3d0;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: var(--slate);
         }
 
-        .status-dot {
+        .header-ai-settings-btn {
+            background: var(--primary-light);
+            border: 1px solid #c7d2fe;
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s ease;
+        }
+
+        .header-ai-settings-btn:hover {
+            background: #e0e7ff;
+            color: var(--primary-hover);
+        }
+
+        .provider-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--slate);
+        }
+
+        .pulse-indicator {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #10b981;
-            animation: pulse 2s infinite;
+            background: var(--success);
+            box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
+            animation: pulseDot 2s infinite;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
+        @keyframes pulseDot {
+            0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(22, 163, 74, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
         }
 
-        .link-docs {
-            text-decoration: none;
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 0.85rem;
-            padding: 8px 14px;
+        .btn-header {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--slate);
+            padding: 7px 14px;
             border-radius: 8px;
-            background: var(--primary-light);
-            transition: all 0.2s ease;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+            text-decoration: none;
         }
 
-        .link-docs:hover {
+        .btn-header:hover {
+            background: var(--light-bg);
+            border-color: #cbd5e1;
+            color: var(--dark);
+        }
+
+        .btn-header.primary {
+            background: var(--primary-light);
+            border-color: #c7d2fe;
+            color: var(--primary);
+        }
+
+        .btn-header.primary:hover {
             background: #e0e7ff;
         }
 
-        /* Container & Layout */
-        .main-container {
-            max-width: 1200px;
-            margin: 28px auto;
-            padding: 0 20px;
+        /* Dropdown Menu */
+        .dropdown {
+            position: relative;
+            display: inline-block;
         }
 
-        /* Tabs */
-        .tab-bar {
-            display: flex;
-            background: #e2e8f0;
-            padding: 4px;
-            border-radius: var(--radius-md);
-            width: fit-content;
-            margin-bottom: 24px;
-        }
-
-        .tab-btn {
-            border: none;
-            background: transparent;
-            padding: 10px 24px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border-radius: 8px;
-            color: var(--muted);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn.active {
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 6px;
             background: white;
-            color: var(--dark);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            min-width: 170px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            z-index: 100;
+            overflow: hidden;
         }
 
-        .tab-btn:disabled {
-            opacity: 0.5;
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--slate);
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light-bg);
+            color: var(--dark);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Tab Bar */
+        .view-tab-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .tab-button {
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.15s ease;
+        }
+
+        .tab-button:hover:not(:disabled) {
+            color: var(--dark);
+            background: #e2e8f0;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: var(--primary);
+            border-color: var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-button:disabled {
+            opacity: 0.45;
             cursor: not-allowed;
         }
 
-        /* Grid */
+        /* 2-Column Grid (Left: Settings / Right: Sections & Progress) */
         .config-grid {
             display: grid;
-            grid-template-columns: 380px 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 24px;
+            align-items: start;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 960px) {
             .config-grid {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* Cards */
+        .left-col, .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Card Primitive */
         .card {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
+            background: white;
             border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
             padding: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: #cbd5e1;
             box-shadow: var(--shadow);
-            margin-bottom: 24px;
         }
 
         .card-header {
@@ -215,84 +390,145 @@
         }
 
         .card-desc {
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             color: var(--muted);
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
-        /* Upload Zone */
+        .info-pill {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: #f1f5f9;
+            color: var(--slate);
+        }
+
+        /* Upload Dropzone */
         .upload-dropzone {
             border: 2px dashed #cbd5e1;
             border-radius: var(--radius-md);
-            padding: 28px 16px;
+            padding: 28px 20px;
             text-align: center;
+            background: #f8fafc;
             cursor: pointer;
             transition: all 0.2s ease;
-            background: #f8fafc;
             position: relative;
         }
 
         .upload-dropzone:hover, .upload-dropzone.dragover {
             border-color: var(--primary);
-            background: var(--primary-light);
+            background: #f5f3ff;
         }
 
-        .upload-dropzone input {
+        .upload-dropzone input[type="file"] {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             opacity: 0;
             cursor: pointer;
+            width: 100%;
+            height: 100%;
         }
 
         .upload-icon {
-            font-size: 2.2rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 10px;
             color: var(--primary);
-            margin-bottom: 8px;
         }
 
         .file-selected-box {
             display: none;
-            padding: 12px;
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
+            background: #f8fafc;
+            border: 1px solid var(--border);
             border-radius: var(--radius-md);
+            padding: 14px 16px;
             align-items: center;
             justify-content: space-between;
-            margin-top: 10px;
         }
 
         .file-info {
             display: flex;
             align-items: center;
-            gap: 10px;
-            overflow: hidden;
+            gap: 12px;
         }
 
         .file-name {
+            font-size: 0.92rem;
             font-weight: 600;
-            font-size: 0.85rem;
-            color: #1e3a8a;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 220px;
+            color: var(--dark);
         }
 
         .file-size {
             font-size: 0.75rem;
             color: var(--muted);
+            margin-top: 2px;
         }
 
         .btn-remove-file {
-            background: none;
-            border: none;
-            color: var(--danger);
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-remove-file:hover {
+            color: var(--danger);
+            border-color: var(--danger-border);
+            background: var(--danger-light);
+        }
+
+        /* Marker Detection Chips */
+        .marker-detection-box {
+            display: none;
+            margin-top: 14px;
+            background: var(--success-light);
+            border: 1px solid var(--success-border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+        }
+
+        .marker-chips-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            max-height: 120px;
+            overflow-y: auto;
+            margin-top: 8px;
+        }
+
+        .marker-chip {
+            padding: 4px 10px;
+            font-size: 0.74rem;
+            border-radius: 6px;
+            border: 1px solid #86efac;
+            background: white;
+            color: #166534;
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .marker-chip:hover {
+            background: #dcfce7;
+            transform: translateY(-1px);
         }
 
         /* Form Controls */
@@ -302,10 +538,8 @@
 
         .form-label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
             color: var(--slate);
             margin-bottom: 6px;
         }
@@ -314,40 +548,75 @@
             width: 100%;
             padding: 10px 14px;
             border: 1px solid var(--border);
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-sm);
             font-size: 0.9rem;
+            color: var(--dark);
             outline: none;
-            transition: all 0.2s;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            background: white;
         }
 
         .form-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
-        /* Sliders */
-        .slider-row {
-            margin-bottom: 14px;
-        }
-
-        .slider-header {
+        /* Difficulty Sliders */
+        .difficulty-stacked-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
             display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 6px;
+            margin: 12px 0 16px;
         }
 
-        .slider {
+        .diff-bar-segment {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .diff-bar-easy { background: #10b981; }
+        .diff-bar-medium { background: #f59e0b; }
+        .diff-bar-hard { background: #ef4444; }
+
+        .difficulty-row {
+            display: grid;
+            grid-template-columns: 140px 1fr 65px;
+            gap: 14px;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .difficulty-row:last-child {
+            border-bottom: none;
+        }
+
+        .diff-label-group h5 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .diff-label-group p {
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        .diff-slider {
+            -webkit-appearance: none;
             width: 100%;
             height: 6px;
-            border-radius: 4px;
+            border-radius: 999px;
             background: #e2e8f0;
             outline: none;
-            -webkit-appearance: none;
         }
 
-        .slider::-webkit-slider-thumb {
+        .diff-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 18px;
             height: 18px;
@@ -355,116 +624,141 @@
             background: var(--primary);
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4);
+            transition: transform 0.1s;
         }
 
-        /* Table of Sections */
-        .sections-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            overflow: hidden;
+        .diff-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
         }
 
-        .sections-table th {
-            background: #f8fafc;
-            padding: 12px 14px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: var(--muted);
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .sections-table td {
-            padding: 12px 14px;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-            vertical-align: middle;
-        }
-
-        .sections-table input[type="number"] {
-            width: 80px;
-            padding: 6px 10px;
+        .diff-num-input {
+            width: 60px;
+            padding: 5px 8px;
+            text-align: right;
             border: 1px solid var(--border);
             border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .btn-add-section {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            width: 100%;
-            justify-content: center;
-            padding: 10px;
-            background: transparent;
-            border: 1px dashed #cbd5e1;
-            border-radius: var(--radius-md);
-            color: var(--primary);
+            font-size: 0.85rem;
             font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            margin-top: 14px;
-            transition: all 0.2s;
-        }
-
-        .btn-add-section:hover {
-            border-color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .btn-delete-row {
-            background: none;
-            border: none;
-            color: var(--danger);
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-
-        .btn-delete-row:hover {
-            background: #fef2f2;
-        }
-
-        /* Mode Selector */
-        .mode-container {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .mode-card {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .mode-card.selected {
-            border-color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .mode-title {
-            font-size: 0.85rem;
-            font-weight: 700;
             color: var(--dark);
         }
 
-        .mode-desc {
+        .difficulty-status-alert {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .difficulty-status-alert.valid {
+            background: var(--success-light);
+            border: 1px solid var(--success-border);
+            color: #166534;
+        }
+
+        .difficulty-status-alert.invalid {
+            background: var(--danger-light);
+            border: 1px solid var(--danger-border);
+            color: #b91c1c;
+        }
+
+        .btn-balance-auto {
+            background: transparent;
+            border: 1px solid currentColor;
+            padding: 2px 8px;
+            border-radius: 4px;
             font-size: 0.72rem;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        /* Sections Table */
+        .formula-callout {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            color: var(--slate);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .formula-callout strong {
+            color: var(--primary);
+        }
+
+        .sections-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .sections-table th {
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
             color: var(--muted);
-            margin-top: 2px;
+            padding: 4px 8px;
+            text-align: left;
+        }
+
+        .section-row-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .section-row-card:hover {
+            border-color: #cbd5e1;
+            background: #fafafa;
+        }
+
+        .section-row-card td {
+            padding: 10px 8px;
+            vertical-align: middle;
+        }
+
+        .section-tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .btn-add-section {
+            width: 100%;
+            background: #ffffff;
+            border: 1px dashed #cbd5e1;
+            padding: 10px;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+            margin-top: 6px;
+        }
+
+        .btn-add-section:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
         }
 
         /* Card Footer */
@@ -483,7 +777,7 @@
         }
 
         .total-label {
-            font-size: 0.75rem;
+            font-size: 0.74rem;
             text-transform: uppercase;
             color: var(--muted);
             font-weight: 700;
@@ -494,13 +788,14 @@
             font-weight: 800;
             font-family: 'Outfit', sans-serif;
             color: var(--primary);
+            line-height: 1.1;
         }
 
         .btn-generate {
             background: linear-gradient(135deg, var(--primary), #3730a3);
             color: white;
             border: none;
-            padding: 14px 32px;
+            padding: 14px 28px;
             font-size: 1rem;
             font-weight: 700;
             border-radius: var(--radius-md);
@@ -512,7 +807,7 @@
             gap: 10px;
         }
 
-        .btn-generate:hover {
+        .btn-generate:hover:not(:disabled) {
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
         }
@@ -528,235 +823,263 @@
             display: none;
             background: white;
             border-radius: var(--radius-lg);
+            border: 1px solid #c7d2fe;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .thinking-steps-flow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin: 14px 0 12px;
+        }
+
+        .step-flow-node {
+            padding: 6px 4px;
+            background: #f8fafc;
             border: 1px solid var(--border);
-            padding: 28px;
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 24px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
             text-align: center;
+            color: var(--muted);
+        }
+
+        .step-flow-node.active {
+            background: var(--primary-light);
+            border-color: #c7d2fe;
+            color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+
+        .step-flow-node.complete {
+            background: var(--success-light);
+            border-color: var(--success-border);
+            color: #166534;
         }
 
         .progress-bar-bg {
-            height: 12px;
+            height: 10px;
             background: #e2e8f0;
             border-radius: 9999px;
             overflow: hidden;
-            margin: 20px 0 12px;
+            margin: 12px 0;
         }
 
         .progress-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 0%;
+            width: 10%;
             border-radius: 9999px;
             transition: width 0.4s ease;
         }
 
         .progress-status {
-            font-size: 0.95rem;
+            font-size: 0.86rem;
             font-weight: 600;
             color: var(--slate);
         }
 
-        .log-box {
-            background: #0f172a;
-            color: #94a3b8;
-            border-radius: 8px;
-            padding: 12px;
-            text-align: left;
-            font-family: monospace;
-            font-size: 0.75rem;
-            max-height: 140px;
-            overflow-y: auto;
-            margin-top: 14px;
-        }
-
-        /* Preview Tab */
+        /* Preview Pane */
         .preview-pane {
             display: none;
         }
 
         .preview-actions {
             display: flex;
-            justify-content: flex-end;
-            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 20px;
         }
 
         .btn-action {
-            padding: 10px 18px;
+            padding: 9px 16px;
             border-radius: var(--radius-md);
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             border: 1px solid var(--border);
             background: white;
+            color: var(--slate);
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.2s;
             text-decoration: none;
-            color: var(--dark);
+            transition: all 0.2s;
         }
 
         .btn-action:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-light);
+            background: #f1f5f9;
+            color: var(--dark);
         }
 
-        .btn-primary-action {
+        .btn-action.btn-primary-action {
             background: var(--primary);
+            border-color: var(--primary);
             color: white;
-            border: none;
         }
 
-        .btn-primary-action:hover {
+        .btn-action.btn-primary-action:hover {
             background: var(--primary-hover);
-            color: white;
         }
 
-        /* Printable Paper View */
+        /* Printable Paper Sheet */
         .paper-sheet {
             background: white;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            padding: 48px;
-            box-shadow: var(--shadow-lg);
-            max-width: 850px;
+            border: 1px solid #cbd5e1;
+            border-radius: var(--radius-md);
+            padding: 56px 64px;
+            box-shadow: var(--shadow);
+            max-width: 900px;
             margin: 0 auto;
         }
 
         .paper-header {
             text-align: center;
-            border-bottom: 2px solid #0f172a;
-            padding-bottom: 18px;
-            margin-bottom: 24px;
+            border-bottom: 2px solid var(--dark);
+            padding-bottom: 20px;
+            margin-bottom: 28px;
         }
 
         .paper-school {
+            font-family: 'Outfit', sans-serif;
             font-size: 1.4rem;
             font-weight: 800;
-            font-family: 'Outfit', sans-serif;
-            text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: #0f172a;
+            text-transform: uppercase;
+            color: var(--dark);
         }
 
         .paper-title {
             font-size: 1.15rem;
             font-weight: 700;
-            color: #334155;
-            margin-top: 4px;
+            color: var(--slate);
+            margin: 4px 0 12px;
         }
 
         .paper-meta {
             display: flex;
             justify-content: space-between;
-            margin-top: 12px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--muted);
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--dark);
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 10px;
         }
 
         .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 28px 0 14px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #cbd5e1;
-        }
-
-        .section-tag {
-            background: #0f172a;
-            color: white;
-            font-size: 0.78rem;
+            background: #f8fafc;
+            border-left: 4px solid var(--primary);
+            padding: 8px 14px;
+            font-size: 0.88rem;
             font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 4px;
-            letter-spacing: 0.05em;
-        }
-
-        .section-desc {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--muted);
+            color: var(--dark);
+            margin: 24px 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .question-item {
             margin-bottom: 18px;
-            padding-left: 24px;
-            position: relative;
+            padding-bottom: 14px;
+            border-bottom: 1px dotted #e2e8f0;
+        }
+
+        .question-item:last-child {
+            border-bottom: none;
+        }
+
+        .q-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
         }
 
         .q-number {
-            position: absolute;
-            left: 0;
-            top: 0;
             font-weight: 700;
-            color: var(--primary);
+            font-size: 0.95rem;
+            min-width: 28px;
         }
 
         .q-text {
-            font-size: 0.98rem;
+            flex: 1;
+            font-size: 0.95rem;
             line-height: 1.5;
-            color: #1e293b;
         }
 
         .q-mark {
             font-weight: 700;
-            color: #0f172a;
-            float: right;
+            font-size: 0.85rem;
+            color: var(--slate);
+            white-space: nowrap;
         }
 
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 600px) {
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
+            margin: 12px 0 10px 40px;
         }
 
         .option-box {
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            color: #334155;
             background: #f8fafc;
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.84rem;
+            color: var(--slate);
+        }
+
+        .option-box.correct {
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
+            font-weight: 600;
         }
 
         .badge-diff {
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 4px;
+            font-size: 0.68rem;
             font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
             background: #f1f5f9;
-            color: #475569;
-            display: inline-block;
-            margin-top: 6px;
+            color: var(--slate);
         }
 
-        /* Toast Notifications */
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 24px;
             right: 24px;
             background: #0f172a;
             color: white;
-            padding: 14px 20px;
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.88rem;
             font-weight: 500;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
             display: none;
-            z-index: 9999;
-            animation: slideIn 0.3s ease;
+            animation: slideIn 0.25s ease;
         }
 
         @keyframes slideIn {
@@ -764,36 +1087,30 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* LLM Configuration Modal */
+        /* Modals */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(5px);
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            padding: 16px;
+            z-index: 200;
+            padding: 20px;
         }
 
         .modal-card {
             background: white;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            max-width: 680px;
             width: 100%;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 680px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
             overflow: hidden;
+            border: 1px solid var(--border);
+            max-height: 90vh;
             display: flex;
             flex-direction: column;
-            max-height: 90vh;
-            animation: modalFadeIn 0.25s ease;
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.97); }
-            to { opacity: 1; transform: scale(1); }
         }
 
         .modal-header {
@@ -802,69 +1119,183 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f8fafc;
         }
 
         .modal-header h3 {
             font-family: 'Outfit', sans-serif;
             font-size: 1.15rem;
+            font-weight: 700;
             color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .modal-close-btn {
-            background: none;
+            background: transparent;
             border: none;
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             color: var(--muted);
             cursor: pointer;
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-close-btn:hover {
-            background: #e2e8f0;
-            color: var(--dark);
+            padding: 4px;
         }
 
         .modal-body {
-            padding: 22px 24px;
+            padding: 20px 24px;
             overflow-y: auto;
-            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 14px 24px;
+            border-top: 1px solid var(--border);
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .prov-nav {
             display: flex;
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 12px;
+            padding-bottom: 8px;
             overflow-x: auto;
         }
 
         .prov-tab-btn {
             padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            border: 1px solid var(--border);
-            background: white;
-            color: var(--slate);
+            border-radius: 8px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--muted);
             cursor: pointer;
-            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.15s ease;
             white-space: nowrap;
         }
 
+        .prov-tab-btn:hover {
+            color: var(--dark);
+            background: #f1f5f9;
+        }
+
         .prov-tab-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: #c7d2fe;
+            box-shadow: 0 1px 3px rgba(79, 70, 229, 0.08);
+        }
+
+        .prov-tab-logo {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .prov-header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .prov-brand-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .prov-brand-logo {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+
+        .prov-brand-title {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--dark);
+            line-height: 1.2;
+        }
+
+        .prov-brand-subtitle {
+            font-size: 0.74rem;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        .prov-status-pill {
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .prov-info-callout {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .prov-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.76rem;
+            padding-bottom: 4px;
+            border-bottom: 1px dashed #f1f5f9;
+        }
+
+        .prov-info-item:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: var(--slate);
+        }
+
+        .info-val {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .prov-portal-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .prov-portal-link:hover {
+            text-decoration: underline;
+        }
+
+        .header-prov-logo {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            border-radius: 3px;
+            flex-shrink: 0;
         }
 
         .prov-card-pane {
@@ -881,59 +1312,72 @@
             align-items: center;
         }
 
-        .key-input-wrapper input {
-            padding-right: 42px;
-            width: 100%;
-        }
-
         .btn-toggle-eye {
             position: absolute;
-            right: 8px;
-            background: none;
+            right: 10px;
+            background: transparent;
             border: none;
             cursor: pointer;
             font-size: 1rem;
             color: var(--muted);
-            padding: 4px;
         }
 
         .test-result-box {
-            margin-top: 14px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 0.82rem;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
             display: none;
-            line-height: 1.4;
         }
 
         .test-result-box.success {
             display: block;
-            background: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
+            background: var(--success-light);
+            border: 1px solid var(--success-border);
+            color: #166534;
         }
 
         .test-result-box.error {
             display: block;
-            background: #fef2f2;
+            background: var(--danger-light);
+            border: 1px solid var(--danger-border);
             color: #991b1b;
-            border: 1px solid #fecaca;
         }
 
         .test-result-box.loading {
             display: block;
-            background: #eff6ff;
-            color: #1e40af;
-            border: 1px solid #bfdbfe;
+            background: #f1f5f9;
+            color: var(--slate);
         }
 
-        .modal-footer {
-            padding: 16px 24px;
-            border-top: 1px solid var(--border);
-            background: #f8fafc;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        /* Print Media Styles */
+        @media print {
+            header, .view-tab-bar, .preview-actions, .toast, .modal-overlay {
+                display: none !important;
+            }
+
+            body, .main-container {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .paper-sheet {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+
+            .section-header {
+                background: none !important;
+                border-left: 2px solid #000 !important;
+                color: #000 !important;
+            }
+
+            .badge-diff {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -941,160 +1385,208 @@
 
     <!-- Header Navigation -->
     <header>
-        <div class="brand">
-            <div class="brand-icon">🎓</div>
-            <div class="brand-text">
+        <div class="brand-container">
+            <div class="brand-logo">🎓</div>
+            <div class="brand-titles">
                 <h1>AI Question Paper Generator</h1>
-                <p>FastAPI Engine • Multi-Format (DOCX &amp; PDF) • Multi-Provider LLMs</p>
+                <p>Create balanced, syllabus-based question papers in minutes</p>
             </div>
         </div>
-        <div class="nav-links">
-            <button class="link-docs" onclick="openLLMConfigModal()" style="border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                ⚙️ LLM Config
-            </button>
-            <div class="badge-status" id="nav-active-llm-badge">
-                <span class="status-dot"></span>
-                <span id="nav-llm-text">Active: Groq</span>
+
+        <div class="header-actions">
+            <!-- Header AI Engine & Settings Suite -->
+            <div class="header-ai-suite">
+                <span class="header-ai-label">🤖 AI Engine:</span>
+                <select id="llm-provider-select" class="header-llm-select" onchange="onProviderSelectChanged(this.value)" title="Choose inference engine">
+                    <option value="groq" selected>⚡ Groq (Ultra-Fast)</option>
+                    <option value="openai">🧠 OpenAI (LangChain)</option>
+                    <option value="gemini">✨ Gemini (LangChain)</option>
+                    <option value="nim">🚀 NVIDIA NIM (LangChain)</option>
+                </select>
+
+                <div class="header-model-pill" title="Currently active model">
+                    <img id="header-active-provider-logo" src="static/Groq.png" alt="Provider logo" class="header-prov-logo">
+                    <span class="pulse-indicator"></span>
+                    <span id="header-provider-name" style="display: none;">Engine: GROQ</span>
+                    <span id="current-active-model-label">qwen/qwen3.8-27b</span>
+                </div>
+
+                <button type="button" class="header-ai-settings-btn" onclick="openLLMConfigModal()" title="Configure AI engine, models, and API credentials">
+                    ⚙️ AI Settings
+                </button>
             </div>
-            <a href="/docs" target="_blank" class="link-docs">📖 Swagger /docs</a>
+
+            <!-- Help Button -->
+            <button type="button" class="btn-header" onclick="openHelpModal()" title="Teacher quick-start guide">
+                ❓ Teacher Guide
+            </button>
+
+            <!-- Developer Dropdown -->
+           <!-- <div class="dropdown">
+                <button type="button" class="btn-header">
+                    <span>Developer</span>
+                    <span style="font-size: 0.65rem;">▼</span>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="/docs" target="_blank" class="dropdown-item" id="link-docs">
+                        <span>📖</span>
+                        <span>API Swagger (/docs)</span>
+                    </a>
+                    <a href="/health" target="_blank" class="dropdown-item">
+                        <span>🩺</span>
+                        <span>System Health Check</span>
+                    </a>
+                </div>
+            </div>-->
         </div>
     </header>
 
     <div class="main-container">
 
-        <!-- Tab Switching -->
-        <div class="tab-bar">
-            <button class="tab-btn active" id="tab-config-btn" onclick="switchTab('config')">⚙️ Configuration</button>
-            <button class="tab-btn" id="tab-preview-btn" onclick="switchTab('preview')" disabled>📄 Paper Preview</button>
+        <!-- Navigation Tabs: Configuration vs Preview -->
+        <div class="view-tab-bar">
+            <button type="button" class="tab-button active" id="tab-config-btn" onclick="switchTab('config')">
+                <span>⚙️ Question Paper Builder</span>
+            </button>
+            <button type="button" class="tab-button" id="tab-preview-btn" onclick="switchTab('preview')" disabled>
+                <span>📄 Examination Paper Preview</span>
+            </button>
         </div>
 
-        <!-- CONFIGURATION VIEW -->
+        <!-- ======================================================== -->
+        <!-- VIEW 1: 2-COLUMN CONFIGURATION WORKSPACE                 -->
+        <!-- ======================================================== -->
         <div id="view-config">
             <div class="config-grid">
                 
-                <!-- LEFT COLUMN: PDF & DIFFICULTY -->
-                <div>
-                    <!-- Upload Card -->
+                <!-- LEFT COLUMN: SOURCE MATERIAL, DIFFICULTY & AI ENGINE -->
+                <div class="left-col">
+                    
+                    <!-- 1. SOURCE MATERIAL CARD -->
                     <div class="card">
                         <div class="card-header">
                             <h2 class="card-title">📁 1. Source Material</h2>
-                            <p class="card-desc">Upload your textbook or curriculum (PDF or Word .docx).</p>
+                            <p class="card-desc">Upload your textbook or curriculum (PDF or Word .docx). AI strictly uses this material to draft questions.</p>
                         </div>
 
+                        <!-- Dropzone Area -->
                         <div class="upload-dropzone" id="dropzone">
                             <input type="file" id="pdf-file-input" accept=".pdf, .docx, application/vnd.openxmlformats-officedocument.wordprocessingml.document">
                             <div class="upload-icon">📄</div>
-                            <p style="font-weight: 600; font-size: 0.9rem;">Click or drag PDF or Word (.docx) here</p>
-                            <p style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">Supports any textbook/notes in PDF or DOCX</p>
+                            <div style="font-weight: 600; font-size: 0.92rem; color: var(--dark);">Click or drag PDF or Word (.docx) here</div>
+                            <div style="font-size: 0.76rem; color: var(--muted); margin-top: 4px;">Supports any textbook/curriculum • Max 50 MB • Up to 500 pages</div>
                         </div>
 
+                        <!-- Uploaded File State Box -->
                         <div class="file-selected-box" id="file-box">
                             <div class="file-info">
-                                <span style="font-size: 1.2rem;" id="file-icon-label">📑</span>
+                                <span style="font-size: 1.4rem;" id="file-icon-label">📘</span>
                                 <div>
-                                    <div class="file-name" id="file-name-label">textbook.docx</div>
-                                    <div class="file-size" id="file-size-label">2.4 MB</div>
+                                    <div class="file-name" id="file-name-label">textbook.pdf</div>
+                                    <div class="file-size" id="file-size-label">12.4 MB • Ready</div>
                                 </div>
                             </div>
-                            <button class="btn-remove-file" onclick="removeFile()" title="Remove file">✕</button>
+                            <button type="button" class="btn-remove-file" onclick="removeFile()" title="Remove file">✕</button>
                         </div>
 
+                        <!-- Target Chapters / Topics -->
                         <div class="form-group">
                             <label class="form-label" for="chapter-input">Target Chapters / Topics</label>
-                            <input type="text" id="chapter-input" class="form-input" value="1" placeholder="e.g. 1, 2 or Thermodynamics, Cell Biology">
-                            <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Comma-separated numbers or topic names</p>
+                            <input type="text" id="chapter-input" class="form-input" value="1" placeholder="e.g. 1, 3, 5 or Thermodynamics, Cell Biology">
+                            <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Enter comma-separated numbers or topic names to focus questions specifically.</p>
 
-                            <!-- Discovered Markers in Document -->
-                            <div id="detected-markers-container" style="display: none; margin-top: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px;">
+                            <!-- Discovered Chapters / Topic Markers -->
+                            <div class="marker-detection-box" id="detected-markers-container">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                    <span style="font-size: 0.75rem; font-weight: 700; color: #166534;" id="markers-heading-label">
-                                        ✨ Discovered Chapters & Topics in Document:
+                                    <span style="font-size: 0.78rem; font-weight: 700; color: #166534;">
+                                        ✨ Discovered Chapters &amp; Topics:
                                     </span>
-                                    <span id="markers-count-badge" style="font-size: 0.7rem; color: #15803d; font-weight: 600;"></span>
+                                    <span id="markers-count-badge" style="font-size: 0.72rem; color: #15803d; font-weight: 600;"></span>
                                 </div>
-                                <div id="markers-chips-list" style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 120px; overflow-y: auto;">
-                                </div>
-                                <p style="font-size: 0.68rem; color: #15803d; margin-top: 6px;">💡 Click any badge to add it to Target Chapters.</p>
+                                <div class="marker-chips-wrap" id="markers-chips-list"></div>
+                                <p style="font-size: 0.68rem; color: #15803d; margin-top: 6px;">💡 Click any badge to add it directly to Target Chapters.</p>
                             </div>
                         </div>
-
                     </div>
 
-
-                    <!-- Difficulty Card -->
+                    <!-- 2. DIFFICULTY BALANCE CARD -->
                     <div class="card">
                         <div class="card-header">
                             <h2 class="card-title">⚖️ 2. Difficulty Balance</h2>
-                            <p class="card-desc">Controls Bloom's taxonomy cognitive depth.</p>
+                            <p class="card-desc">Cognitive breakdown based on Bloom's taxonomy. Changing any slider automatically balances the others to 100%.</p>
                         </div>
 
-                        <div class="slider-row">
-                            <div class="slider-header">
-                                <span>Easy</span>
-                                <span id="easy-val">30%</span>
-                            </div>
-                            <input type="range" class="slider" id="easy-slider" min="0" max="100" value="30" step="5" oninput="updateDifficulty('easy', this.value)">
+                        <!-- Visual Stacked Bar -->
+                        <div class="difficulty-stacked-bar">
+                            <div class="diff-bar-segment diff-bar-easy" id="bar-easy" style="width: 30%;"></div>
+                            <div class="diff-bar-segment diff-bar-medium" id="bar-medium" style="width: 40%;"></div>
+                            <div class="diff-bar-segment diff-bar-hard" id="bar-hard" style="width: 30%;"></div>
                         </div>
 
-                        <div class="slider-row">
-                            <div class="slider-header">
-                                <span>Medium</span>
-                                <span id="medium-val">40%</span>
+                        <!-- Easy Control -->
+                        <div class="difficulty-row">
+                            <div class="diff-label-group">
+                                <h5><span style="color:#10b981;">●</span> Easy</h5>
+                                <p>Basic recall &amp; concepts</p>
                             </div>
-                            <input type="range" class="slider" id="medium-slider" min="0" max="100" value="40" step="5" oninput="updateDifficulty('medium', this.value)">
+                            <input type="range" class="diff-slider" id="easy-slider" min="0" max="100" value="30" step="5" oninput="onDifficultyInput('easy', this.value)">
+                            <input type="number" class="diff-num-input" id="easy-num" min="0" max="100" value="30" onchange="onDifficultyInput('easy', this.value)">
                         </div>
 
-                        <div class="slider-row">
-                            <div class="slider-header">
-                                <span>Hard</span>
-                                <span id="hard-val">30%</span>
+                        <!-- Medium Control -->
+                        <div class="difficulty-row">
+                            <div class="diff-label-group">
+                                <h5><span style="color:#f59e0b;">●</span> Medium</h5>
+                                <p>Understanding &amp; application</p>
                             </div>
-                            <input type="range" class="slider" id="hard-slider" min="0" max="100" value="30" step="5" oninput="updateDifficulty('hard', this.value)">
+                            <input type="range" class="diff-slider" id="medium-slider" min="0" max="100" value="40" step="5" oninput="onDifficultyInput('medium', this.value)">
+                            <input type="number" class="diff-num-input" id="medium-num" min="0" max="100" value="40" onchange="onDifficultyInput('medium', this.value)">
+                        </div>
+
+                        <!-- Hard Control -->
+                        <div class="difficulty-row">
+                            <div class="diff-label-group">
+                                <h5><span style="color:#ef4444;">●</span> Hard</h5>
+                                <p>Analysis &amp; problem solving</p>
+                            </div>
+                            <input type="range" class="diff-slider" id="hard-slider" min="0" max="100" value="30" step="5" oninput="onDifficultyInput('hard', this.value)">
+                            <input type="number" class="diff-num-input" id="hard-num" min="0" max="100" value="30" onchange="onDifficultyInput('hard', this.value)">
+                        </div>
+
+                        <!-- Live Validation Alert -->
+                        <div class="difficulty-status-alert valid" id="diff-status-box">
+                            <span id="diff-status-text">✓ Your difficulty distribution totals 100%.</span>
+                            <button type="button" class="btn-balance-auto" id="btn-balance-diff" style="display: none;" onclick="autoBalanceDifficulty()">Auto-Balance (30/40/30)</button>
                         </div>
                     </div>
 
-                    <!-- AI Model Provider Card -->
-                    <div class="card">
-                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div>
-                                <h2 class="card-title">🤖 3. AI Model Engine</h2>
-                                <p class="card-desc">Select which LLM provider generates your questions.</p>
-                            </div>
-                            <button type="button" class="btn-action" onclick="openLLMConfigModal()" style="padding: 6px 12px; font-size: 0.8rem; background: var(--primary-light); color: var(--primary); border-color: #c7d2fe;">
-                                ⚙️ Configure Keys
-                            </button>
-                        </div>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label class="form-label" for="llm-provider-select">Inference Provider</label>
-                            <select id="llm-provider-select" class="form-input" style="padding: 10px 12px; font-weight: 600; cursor: pointer; width: 100%; border: 1px solid var(--border); border-radius: 8px;" onchange="onProviderSelectChanged(this.value)">
-                                <option value="groq" selected>⚡ Groq (Ultra-Fast • Llama 3.3 / Qwen)</option>
-                                <option value="openai">🧠 OpenAI (GPT-4o / GPT-4o-mini)</option>
-                                <option value="gemini">✨ Google Gemini (Gemini 1.5 Flash)</option>
-                                <option value="nim">🚀 NVIDIA NIM (Meta Llama 3.1 70B)</option>
-                            </select>
-                            <p style="font-size: 0.72rem; color: var(--muted); margin-top: 6px;" id="provider-status-caption">
-                                Current model: <span id="current-active-model-label" style="font-weight: 600; color: var(--dark);">qwen/qwen3.8-27b</span>
-                            </p>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- RIGHT COLUMN: SCHEMA CONFIGURATION -->
-                <div>
+                <!-- RIGHT COLUMN: QUESTION PAPER SECTIONS & GENERATION PROGRESS -->
+                <div class="right-col">
+                    
+                    <!-- 3. QUESTION PAPER SECTIONS CARD -->
                     <div class="card">
                         <div class="card-header">
-                            <h2 class="card-title">📝 4. Question Paper Sections</h2>
-                            <p class="card-desc">Configure mark categories and question counts.</p>
+                            <h2 class="card-title">📝 3. Question Paper Sections</h2>
+                            <p class="card-desc">Configure mark categories, question types, and counts.</p>
                         </div>
 
+                        <!-- Formula Banner -->
+                        <div class="formula-callout">
+                            <span>Formula: <strong>Section Marks = Marks / Q × Question Count</strong></span>
+                            <span id="formula-running-total" style="font-weight: 700; color: var(--primary);">Total: 25 marks | 12 questions</span>
+                        </div>
+
+                        <!-- Editable Sections Table -->
                         <table class="sections-table">
                             <thead>
                                 <tr>
-                                    <th>Mark Value</th>
-                                    <th>Questions Count</th>
-                                    <th>MCQ (4 Options)</th>
-                                    <th style="text-align: right;">Subtotal</th>
-                                    <th></th>
+                                    <th style="width: 130px;">Marks / Question</th>
+                                    <th style="width: 130px;">Questions Count</th>
+                                    <th>Question Type</th>
+                                    <th style="text-align: right; width: 90px;">Subtotal</th>
+                                    <th style="width: 36px;"></th>
                                 </tr>
                             </thead>
                             <tbody id="sections-tbody">
@@ -1102,64 +1594,70 @@
                             </tbody>
                         </table>
 
-                        <button class="btn-add-section" onclick="addSectionRow(1, 5, true)">+ Add Another Section</button>
+                        <button type="button" class="btn-add-section" onclick="addSectionRow(2, 3, false)">
+                            <span>+ Add Another Question Section</span>
+                        </button>
 
-                        <!-- Execution Mode -->
-                        <div class="form-group" style="margin-top: 24px;">
-                            <label class="form-label">Processing Engine Mode</label>
-                            <div class="mode-container">
-                                <div class="mode-card selected" id="mode-async" onclick="setMode('async')">
-                                    <input type="radio" name="exec_mode" value="async" checked style="margin-top: 3px;">
-                                    <div>
-                                        <div class="mode-title">Async Queue (Plan 2)</div>
-                                        <div class="mode-desc">Background worker + Live Progress + Word/PDF compilation</div>
-                                    </div>
-                                </div>
-                                <div class="mode-card" id="mode-sync" onclick="setMode('sync')">
-                                    <input type="radio" name="exec_mode" value="sync" style="margin-top: 3px;">
-                                    <div>
-                                        <div class="mode-title">Direct Sync</div>
-                                        <div class="mode-desc">Direct request (drop-in replacement for page 6.tsx)</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                        <!-- Card Footer with Total Marks & Generate Button -->
                         <div class="card-footer">
                             <div class="total-badge">
                                 <span class="total-label">Total Marks Estimate</span>
                                 <span class="total-value" id="grand-total-marks">25 pts</span>
+                                <span style="font-size: 0.74rem; color: var(--muted); font-weight: 600; margin-top: 2px;" id="grand-total-qcount">12 Total Questions</span>
                             </div>
 
-                            <button class="btn-generate" id="btn-generate" onclick="generatePaper()">
+                            <button type="button" class="btn-generate" id="btn-generate" onclick="generatePaper()">
                                 <span>⚡ Generate Paper</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Progress Box (Async) -->
+                    <!-- AI Thinking & Progress Card (Directly in Right Column) -->
                     <div class="progress-card" id="progress-card">
-                        <h3 style="font-family: 'Outfit'; font-size: 1.2rem;">Generating Question Paper...</h3>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <h3>Generating Question Paper...</h3>
+                            <span class="info-pill" style="background: var(--primary-light); color: var(--primary);">Async Worker</span>
+                        </div>
+
+                        <!-- 4-Stage Pipeline Flow Nodes -->
+                        <div class="thinking-steps-flow">
+                            <div class="step-flow-node" id="node-step-1">1. Reading</div>
+                            <div class="step-flow-node" id="node-step-2">2. Extracting</div>
+                            <div class="step-flow-node" id="node-step-3">3. AI Reasoning</div>
+                            <div class="step-flow-node" id="node-step-4">4. Compiling</div>
+                        </div>
+
                         <div class="progress-bar-bg">
                             <div class="progress-bar-fill" id="progress-fill"></div>
                         </div>
                         <p class="progress-status" id="progress-status-text">Initializing...</p>
-                        <div class="log-box" id="progress-logs">> Waiting for background worker...</div>
+                        <div id="progress-logs" style="display: none;"></div>
                     </div>
+
                 </div>
 
             </div>
         </div>
 
-        <!-- PREVIEW VIEW -->
+        <!-- ======================================================== -->
+        <!-- VIEW 2: DEDICATED PAPER PREVIEW VIEW                     -->
+        <!-- ======================================================== -->
         <div id="view-preview" class="preview-pane">
             <div class="preview-actions">
-                <button class="btn-action" onclick="switchTab('config')">⬅️ Back to Config</button>
-                <a href="#" class="btn-action btn-primary-action" id="btn-download-docx" target="_blank">📥 Download Word (.docx)</a>
+                <button type="button" class="btn-action" onclick="switchTab('config')">
+                    <span>⬅️ Back to Config</span>
+                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn-action" onclick="window.print()">
+                        <span>🖨️ Print / Save PDF</span>
+                    </button>
+                    <a href="#" class="btn-action btn-primary-action" id="btn-download-docx" target="_blank">
+                        <span>📥 Download Word (.docx)</span>
+                    </a>
+                </div>
             </div>
 
-
-            <!-- Paper Sheet -->
+            <!-- Printed Examination Sheet -->
             <div class="paper-sheet" id="paper-sheet-content">
                 <!-- Dynamically Rendered -->
             </div>
@@ -1167,11 +1665,359 @@
 
     </div>
 
-    <!-- Toast -->
+    <!-- Notification Toast -->
     <div class="toast" id="toast">Notification message</div>
 
+    <!-- ======================================================== -->
+    <!-- MODAL 1: TEACHER QUICK GUIDE                             -->
+    <!-- ======================================================== -->
+    <div class="modal-overlay" id="help-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>📖 Teacher Quick-Start Guide</h3>
+                <button type="button" class="modal-close-btn" onclick="closeHelpModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; flex-direction: column; gap: 14px; font-size: 0.88rem; color: var(--slate);">
+                    <div>
+                        <h4 style="font-weight: 700; color: var(--dark); margin-bottom: 2px;">1. Upload Study Material</h4>
+                        <p>Upload a textbook chapter or notes in PDF or Word (.docx). The pipeline extracts educational facts and automatically filters out ISBNs and metadata.</p>
+                    </div>
+                    <div>
+                        <h4 style="font-weight: 700; color: var(--dark); margin-bottom: 2px;">2. Specify Target Content</h4>
+                        <p>Target specific chapters (e.g. <code>1, 3</code>) or topics. You can also click detected heading chips to add them directly.</p>
+                    </div>
+                    <div>
+                        <h4 style="font-weight: 700; color: var(--dark); margin-bottom: 2px;">3. Set Difficulty Balance</h4>
+                        <p>Adjust Bloom's taxonomy levels between Easy, Medium, and Hard. The total must equal 100%.</p>
+                    </div>
+                    <div>
+                        <h4 style="font-weight: 700; color: var(--dark); margin-bottom: 2px;">4. Design Sections Blueprint</h4>
+                        <p>1-mark questions can be multiple choice (MCQ) or short answers. 2+ marks are descriptive. The system automatically verifies mark weights and question counts.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!--<span>See Developer ▾ → API Swagger for technical documentation</span>-->
+                <button type="button" class="btn-action btn-primary-action" onclick="closeHelpModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- MODAL 2: LLM ENGINE & API CREDENTIALS CONFIGURATION     -->
+    <!-- ======================================================== -->
+    <div class="modal-overlay" id="llm-config-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>⚙️ AI Model Engines &amp; API Credentials</h3>
+                <button type="button" class="modal-close-btn" onclick="closeLLMConfigModal()">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Navigation Tabs with Logos -->
+                <div class="prov-nav">
+                    <button type="button" class="prov-tab-btn active" data-prov="groq" onclick="switchProviderTab('groq')">
+                        <img src="static/Groq.png" alt="Groq logo" class="prov-tab-logo">
+                        <span>Groq</span>
+                    </button>
+                    <button type="button" class="prov-tab-btn" data-prov="openai" onclick="switchProviderTab('openai')">
+                        <img src="static/chatgpt.png" alt="OpenAI logo" class="prov-tab-logo">
+                        <span>OpenAI</span>
+                    </button>
+                    <button type="button" class="prov-tab-btn" data-prov="gemini" onclick="switchProviderTab('gemini')">
+                        <img src="static/gemini.jpg" alt="Google Gemini logo" class="prov-tab-logo">
+                        <span>Google Gemini</span>
+                    </button>
+                    <button type="button" class="prov-tab-btn" data-prov="nim" onclick="switchProviderTab('nim')">
+                        <img src="static/nvidia.png" alt="NVIDIA NIM logo" class="prov-tab-logo">
+                        <span>NVIDIA NIM</span>
+                    </button>
+                </div>
+
+                <!-- 1. GROQ PANE -->
+                <div class="prov-card-pane active" id="pane-groq">
+                    <div class="prov-header-box">
+                        <div class="prov-brand-meta">
+                            <img src="static/Groq.png" alt="Groq" class="prov-brand-logo">
+                            <div>
+                                <h4 class="prov-brand-title">Groq Cloud LPU</h4>
+                                <p class="prov-brand-subtitle">Ultra-fast Language Processing Units • Real-time inference</p>
+                            </div>
+                        </div>
+                        <span id="badge-cfg-groq" class="prov-status-pill">Checking...</span>
+                    </div>
+
+                    <div class="prov-info-callout">
+                        <div class="prov-info-item">
+                            <span class="info-label">⚡ Speed / Latency:</span>
+                            <span class="info-val">500+ tokens/sec (Instant exam generation)</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">🧠 Orchestration:</span>
+                            <span class="info-val">Fast Direct &amp; LangChain ChatGroq</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">🎯 Best For:</span>
+                            <span class="info-val">Fast syllabus question drafting without latency</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">🔗 API Portal:</span>
+                            <a href="https://console.groq.com/keys" target="_blank" class="prov-portal-link">console.groq.com ↗</a>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Groq API Key</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="key-input-groq" class="form-input" placeholder="Enter gsk_... or leave empty to keep current">
+                            <button type="button" id="eye-btn-groq" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-groq', 'eye-btn-groq')">👁️</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Model Presets</label>
+                        <select class="form-input" onchange="onPresetSelect('groq', this.value)" style="margin-bottom: 6px;">
+                            <option value="">-- Choose preset model --</option>
+                            <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b (Default Recommended)</option>
+                            <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+                            <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                        </select>
+                        <input type="text" id="model-input-groq" class="form-input" value="qwen/qwen3.8-27b" placeholder="Model identifier">
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-action" onclick="testProviderConnection('groq')">🔌 Test Connection</button>
+                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('groq')">⭐ Set Active</button>
+                    </div>
+                    <div id="test-result-groq" class="test-result-box"></div>
+                </div>
+
+                <!-- 2. OPENAI PANE -->
+                <div class="prov-card-pane" id="pane-openai">
+                    <div class="prov-header-box">
+                        <div class="prov-brand-meta">
+                            <img src="static/chatgpt.png" alt="OpenAI" class="prov-brand-logo">
+                            <div>
+                                <h4 class="prov-brand-title">OpenAI API (LangChain)</h4>
+                                <p class="prov-brand-subtitle">Industry standard generative reasoning models</p>
+                            </div>
+                        </div>
+                        <span id="badge-cfg-openai" class="prov-status-pill">Checking...</span>
+                    </div>
+
+                    <div class="prov-info-callout">
+                        <div class="prov-info-item">
+                            <span class="info-label">🧠 Models:</span>
+                            <span class="info-val">GPT-4o, GPT-4o-mini (Omni multimodal reasoning)</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">⚡ Orchestration:</span>
+                            <span class="info-val">LangChain ChatOpenAI engine</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">🎯 Best For:</span>
+                            <span class="info-val">Higher-order Bloom's taxonomy &amp; academic synthesis</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">🔗 API Portal:</span>
+                            <a href="https://platform.openai.com/api-keys" target="_blank" class="prov-portal-link">platform.openai.com ↗</a>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">OpenAI API Key</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="key-input-openai" class="form-input" placeholder="sk-proj-...">
+                            <button type="button" id="eye-btn-openai" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-openai', 'eye-btn-openai')">👁️</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Model Presets</label>
+                        <select class="form-input" onchange="onPresetSelect('openai', this.value)" style="margin-bottom: 6px;">
+                            <option value="">-- Choose preset model --</option>
+                            <option value="gpt-4o-mini">gpt-4o-mini (Fast &amp; Cost-Efficient)</option>
+                            <option value="gpt-4o">gpt-4o (Academic Reasoning)</option>
+                        </select>
+                        <input type="text" id="model-input-openai" class="form-input" value="gpt-4o-mini" placeholder="Model identifier">
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-action" onclick="testProviderConnection('openai')">🔌 Test Connection</button>
+                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('openai')">⭐ Set Active</button>
+                    </div>
+                    <div id="test-result-openai" class="test-result-box"></div>
+                </div>
+
+                <!-- 3. GEMINI PANE -->
+                <div class="prov-card-pane" id="pane-gemini">
+                    <div class="prov-header-box">
+                        <div class="prov-brand-meta">
+                            <img src="static/gemini.jpg" alt="Google Gemini" class="prov-brand-logo">
+                            <div>
+                                <h4 class="prov-brand-title">Google Gemini (LangChain)</h4>
+                                <p class="prov-brand-subtitle">Google DeepMind multimodal foundation models</p>
+                            </div>
+                        </div>
+                        <span id="badge-cfg-gemini" class="prov-status-pill">Checking...</span>
+                    </div>
+
+                    <div class="prov-info-callout">
+                        <div class="prov-info-item">
+                            <span class="info-label">🧠 Models:</span>
+                            <span class="info-val">Gemini 1.5 Flash (high speed) &amp; Gemini 1.5 Pro</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">⚡ Orchestration:</span>
+                            <span class="info-val">LangChain ChatGoogleGenerativeAI</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">🎯 Best For:</span>
+                            <span class="info-val">Large textbook chapters &amp; expansive context recall</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">🔗 API Portal:</span>
+                            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="prov-portal-link">aistudio.google.com ↗</a>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Google Gemini API Key</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="key-input-gemini" class="form-input" placeholder="AIzaSy...">
+                            <button type="button" id="eye-btn-gemini" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-gemini', 'eye-btn-gemini')">👁️</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Model Presets</label>
+                        <select class="form-input" onchange="onPresetSelect('gemini', this.value)" style="margin-bottom: 6px;">
+                            <option value="">-- Choose preset model --</option>
+                            <option value="gemini-1.5-flash">gemini-1.5-flash (Recommended)</option>
+                            <option value="gemini-1.5-pro">gemini-1.5-pro (Analytical)</option>
+                        </select>
+                        <input type="text" id="model-input-gemini" class="form-input" value="gemini-1.5-flash" placeholder="Model identifier">
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-action" onclick="testProviderConnection('gemini')">🔌 Test Connection</button>
+                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('gemini')">⭐ Set Active</button>
+                    </div>
+                    <div id="test-result-gemini" class="test-result-box"></div>
+                </div>
+
+                <!-- 4. NVIDIA NIM PANE -->
+                <div class="prov-card-pane" id="pane-nim">
+                    <div class="prov-header-box">
+                        <div class="prov-brand-meta">
+                            <img src="static/nvidia.png" alt="NVIDIA NIM" class="prov-brand-logo">
+                            <div>
+                                <h4 class="prov-brand-title">NVIDIA NIM (LangChain)</h4>
+                                <p class="prov-brand-subtitle">Enterprise GPU-accelerated microservices &amp; self-hosted endpoints</p>
+                            </div>
+                        </div>
+                        <span id="badge-cfg-nim" class="prov-status-pill">Checking...</span>
+                    </div>
+
+                    <div class="prov-info-callout">
+                        <div class="prov-info-item">
+                            <span class="info-label">🧠 Models:</span>
+                            <span class="info-val">Meta Llama 3.1 70B Instruct, Mixtral 8x22B</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">⚡ Orchestration:</span>
+                            <span class="info-val">LangChain OpenAI-compatible NIM endpoint</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">🎯 Best For:</span>
+                            <span class="info-val">Private school infrastructure &amp; high-throughput clusters</span>
+                        </div>
+                        <div class="prov-info-item">
+                            <span class="info-label">🔗 API Portal:</span>
+                            <a href="https://build.nvidia.com" target="_blank" class="prov-portal-link">build.nvidia.com ↗</a>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">NVIDIA API Key</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="key-input-nim" class="form-input" placeholder="nvapi-...">
+                            <button type="button" id="eye-btn-nim" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-nim', 'eye-btn-nim')">👁️</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">NIM Base URL</label>
+                        <input type="text" id="nim-base-url-input" class="form-input" value="https://integrate.api.nvidia.com/v1">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label class="form-label">Model Presets</label>
+                        <input type="text" id="model-input-nim" class="form-input" value="meta/llama-3.1-70b-instruct" placeholder="Model identifier">
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-action" onclick="testProviderConnection('nim')">🔌 Test Connection</button>
+                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('nim')">⭐ Set Active</button>
+                    </div>
+                    <div id="test-result-nim" class="test-result-box"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.82rem; font-weight: 600; color: var(--slate);">Active Provider:</span>
+                    <select id="modal-active-provider-select" class="form-input" style="padding: 6px 10px; font-size: 0.82rem; width: auto; font-weight: 600;">
+                        <option value="groq">⚡ Groq</option>
+                        <option value="openai">🧠 OpenAI</option>
+                        <option value="gemini">✨ Gemini</option>
+                        <option value="nim">🚀 NVIDIA NIM</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-action" onclick="closeLLMConfigModal()">Cancel</button>
+                    <button type="button" class="btn-action btn-primary-action" id="btn-save-llm-config" onclick="saveLLMConfig()">💾 Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- JAVASCRIPT APPLICATION CORE                              -->
+    <!-- ======================================================== -->
     <script>
-        // State
+        // ----------------------------------------------------
+        // Dynamic Application Base Path Resolution
+        // ----------------------------------------------------
+        function getBasePath() {
+            const meta = document.querySelector('meta[name="app-base"]');
+            let base = (meta && meta.getAttribute('content')) || (window.__APP_CONFIG__ && window.__APP_CONFIG__.basePath) || window.__APP_BASE__ || '';
+            base = base.trim();
+            if (!base || base === '/') return '';
+            if (base.includes('://')) {
+                try { base = new URL(base).pathname; } catch (e) {}
+            }
+            if (!base.startsWith('/')) base = '/' + base;
+            return base.replace(/\/+$/, '');
+        }
+
+        function apiUrl(endpoint) {
+            if (!endpoint) return '';
+            if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+                return endpoint;
+            }
+            const base = getBasePath();
+            const cleanEndpoint = endpoint.startsWith('/') ? endpoint : '/' + endpoint;
+            if (base && (cleanEndpoint === base || cleanEndpoint.startsWith(base + '/'))) {
+                return cleanEndpoint;
+            }
+            return `${base}${cleanEndpoint}`;
+        }
+
+        // ----------------------------------------------------
+        // Application State
+        // ----------------------------------------------------
         let uploadedFile = null;
         let selectedMode = 'async';
         let sections = [
@@ -1183,14 +2029,23 @@
         let activeTaskId = null;
         let pollInterval = null;
         let currentPaperData = null;
+        let llmConfigData = null;
+        let currentModalTab = 'groq';
 
-        // Init
+        // ----------------------------------------------------
+        // Lifecycle Initialization
+        // ----------------------------------------------------
         document.addEventListener('DOMContentLoaded', () => {
+            const docsLink = document.getElementById('link-docs');
+            if (docsLink) docsLink.href = apiUrl('/docs');
             renderSections();
             setupDropzone();
+            fetchLLMConfig();
         });
 
-        // Dropzone Setup
+        // ----------------------------------------------------
+        // File Upload & Marker Scanning
+        // ----------------------------------------------------
         function setupDropzone() {
             const dropzone = document.getElementById('dropzone');
             const fileInput = document.getElementById('pdf-file-input');
@@ -1227,6 +2082,12 @@
                 return;
             }
 
+            const maxMb = 50;
+            if (file.size > maxMb * 1024 * 1024) {
+                showToast(`❌ File size exceeds ${maxMb} MB limit.`);
+                return;
+            }
+
             uploadedFile = file;
             document.getElementById('dropzone').style.display = 'none';
             const fileBox = document.getElementById('file-box');
@@ -1234,11 +2095,18 @@
             document.getElementById('file-name-label').textContent = file.name;
             const extLabel = isDocx ? 'Word (.docx)' : 'PDF';
             document.getElementById('file-size-label').textContent = (file.size / (1024 * 1024)).toFixed(2) + ` MB • ${extLabel}`;
-            document.getElementById('file-icon-label').textContent = isDocx ? '📝' : '📄';
-            showToast(`✅ ${extLabel} loaded: ` + file.name);
+            document.getElementById('file-icon-label').textContent = isDocx ? '📝' : '📘';
+            showToast(`✅ Study material loaded: ` + file.name);
 
-            // Auto-discover chapter markers for both DOCX and PDF
             discoverDocumentMarkers(file);
+        }
+
+        function removeFile() {
+            uploadedFile = null;
+            document.getElementById('pdf-file-input').value = '';
+            document.getElementById('file-box').style.display = 'none';
+            document.getElementById('dropzone').style.display = 'block';
+            document.getElementById('detected-markers-container').style.display = 'none';
         }
 
         async function discoverDocumentMarkers(file) {
@@ -1253,34 +2121,30 @@
             formData.append('file', file);
 
             try {
-                const res = await fetch('/api/v1/exam/markers', {
+                const res = await fetch(apiUrl('/api/v1/exam/markers'), {
                     method: 'POST',
                     body: formData
                 });
-                if (!res.ok) throw new Error('Marker detection returned error');
+                if (!res.ok) throw new Error('Marker scan error');
                 const markers = await res.json();
 
                 if (!markers || markers.length === 0) {
-                    list.innerHTML = '<span style="font-size:0.75rem; color:#64748b;">No formal headings or bookmarks detected. You can type topic keywords or numbers manually.</span>';
+                    list.innerHTML = '<span style="font-size:0.75rem; color:#64748b;">No formal headings detected. You can type topic names or chapter numbers manually.</span>';
                     badge.textContent = '0 found';
                     return;
                 }
 
-                badge.textContent = `${markers.length} chapters found`;
+                badge.textContent = `${markers.length} chapter(s) found`;
                 list.innerHTML = '';
 
                 markers.forEach(m => {
                     const chip = document.createElement('button');
                     chip.type = 'button';
-                    chip.style.cssText = 'padding: 4px 8px; font-size: 0.73rem; border-radius: 6px; border: 1px solid #86efac; background: white; color: #166534; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s ease; font-weight: 500;';
+                    chip.className = 'marker-chip';
                     
                     const label = m.number ? `${m.number}. ${m.title}` : m.title;
-                    const pageLabel = m.start_page ? ` (pp. ${m.start_page}-${m.end_page || m.start_page})` : '';
-                    const levelBadge = m.level === 1 ? '🏷️' : '🔹';
-                    chip.innerHTML = `<span>${levelBadge}</span> <span>${label}${pageLabel}</span>`;
-
-                    chip.onmouseover = () => chip.style.background = '#dcfce7';
-                    chip.onmouseout = () => chip.style.background = 'white';
+                    const pageLabel = m.start_page ? ` (pp. ${m.start_page})` : '';
+                    chip.innerHTML = `<span>🏷️</span> <span>${escapeHtml(label)}${escapeHtml(pageLabel)}</span>`;
 
                     chip.onclick = () => {
                         const chapterInput = document.getElementById('chapter-input');
@@ -1298,52 +2162,19 @@
                         showToast(`Added to target chapters: ${queryVal}`);
                     };
 
-                    const group = document.createElement('div');
-                    group.style.cssText = 'display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px;';
-                    group.appendChild(chip);
-                    if (Array.isArray(m.child_topics) && m.child_topics.length) {
-                        const toggle = document.createElement('button');
-                        toggle.type = 'button';
-                        toggle.textContent = `▸ ${m.child_topics.length} sub-topics`;
-                        toggle.style.cssText = 'border: 0; background: transparent; color: #64748b; font-size: 0.68rem; cursor: pointer; padding: 0 6px;';
-                        const children = document.createElement('div');
-                        children.style.cssText = 'display: none; flex-direction: column; gap: 2px; padding-left: 8px;';
-                        toggle.onclick = () => {
-                            const open = children.style.display === 'flex';
-                            children.style.display = open ? 'none' : 'flex';
-                            toggle.textContent = `${open ? '▸' : '▾'} ${m.child_topics.length} sub-topics`;
-                        };
-                        m.child_topics.forEach(child => {
-                            const childButton = document.createElement('button');
-                            childButton.type = 'button';
-                            childButton.textContent = `${child.number || ''} ${child.title}`.trim();
-                            childButton.style.cssText = 'border: 0; background: transparent; color: #475569; font-size: 0.68rem; cursor: pointer; text-align: left;';
-                            childButton.onclick = () => { document.getElementById('chapter-input').value = child.number || child.title; };
-                            children.appendChild(childButton);
-                        });
-                        group.appendChild(toggle);
-                        group.appendChild(children);
-                    }
-                    list.appendChild(group);
+                    list.appendChild(chip);
                 });
             } catch (err) {
-                console.warn('Document markers discovery error:', err);
-                list.innerHTML = '<span style="font-size:0.75rem; color:#64748b;">Could not auto-read headings. You can still type chapter numbers or topic titles manually.</span>';
+                console.warn('Marker discovery warning:', err);
+                list.innerHTML = '<span style="font-size:0.75rem; color:#64748b;">Headings scan optional. You can enter topic names manually.</span>';
             }
         }
 
-        function removeFile() {
-            uploadedFile = null;
-            document.getElementById('pdf-file-input').value = '';
-            document.getElementById('file-box').style.display = 'none';
-            document.getElementById('dropzone').style.display = 'block';
-            document.getElementById('detected-markers-container').style.display = 'none';
-        }
-
-
-        // Difficulty Sliders
-        function updateDifficulty(changedKey, val) {
-            val = parseInt(val);
+        // ----------------------------------------------------
+        // 2. Difficulty Balance
+        // ----------------------------------------------------
+        function onDifficultyInput(changedKey, val) {
+            val = Math.max(0, Math.min(100, parseInt(val) || 0));
             const others = changedKey === 'easy' ? ['medium', 'hard'] : changedKey === 'medium' ? ['easy', 'hard'] : ['easy', 'medium'];
             const remaining = 100 - val;
             const o1 = others[0];
@@ -1360,54 +2191,141 @@
             }
 
             difficulty[changedKey] = val;
-            difficulty[o1] = newO1;
-            difficulty[o2] = newO2;
+            difficulty[o1] = Math.max(0, newO1);
+            difficulty[o2] = Math.max(0, newO2);
 
-            document.getElementById('easy-slider').value = difficulty.easy;
-            document.getElementById('easy-val').textContent = difficulty.easy + '%';
-            document.getElementById('medium-slider').value = difficulty.medium;
-            document.getElementById('medium-val').textContent = difficulty.medium + '%';
-            document.getElementById('hard-slider').value = difficulty.hard;
-            document.getElementById('hard-val').textContent = difficulty.hard + '%';
+            // Ensure exact 100% total
+            const currentTotal = difficulty[changedKey] + difficulty[o1] + difficulty[o2];
+            const remainder = 100 - currentTotal;
+            if (remainder !== 0) {
+                if (difficulty[o1] + remainder >= 0) {
+                    difficulty[o1] += remainder;
+                } else {
+                    difficulty[o2] += remainder;
+                }
+            }
+
+            ['easy', 'medium', 'hard'].forEach(k => {
+                const s = document.getElementById(`${k}-slider`);
+                const n = document.getElementById(`${k}-num`);
+                if (s) s.value = difficulty[k];
+                if (n) n.value = difficulty[k];
+            });
+
+            updateDifficultyUI();
         }
 
-        // Sections
+        // Backward compatibility alias
+        function updateDifficulty(changedKey, val) {
+            onDifficultyInput(changedKey, val);
+        }
+
+        function updateDifficultyUI() {
+            const easy = difficulty.easy;
+            const medium = difficulty.medium;
+            const hard = difficulty.hard;
+            const total = easy + medium + hard;
+
+            const sumForBar = total > 0 ? total : 100;
+            const barEasy = document.getElementById('bar-easy');
+            const barMed = document.getElementById('bar-medium');
+            const barHard = document.getElementById('bar-hard');
+            if (barEasy) barEasy.style.width = (easy / sumForBar * 100) + '%';
+            if (barMed) barMed.style.width = (medium / sumForBar * 100) + '%';
+            if (barHard) barHard.style.width = (hard / sumForBar * 100) + '%';
+
+            const statusBox = document.getElementById('diff-status-box');
+            const statusText = document.getElementById('diff-status-text');
+            const balanceBtn = document.getElementById('btn-balance-diff');
+
+            if (statusBox && statusText) {
+                if (total === 100) {
+                    statusBox.className = 'difficulty-status-alert valid';
+                    statusText.textContent = `✓ Auto-balanced: ${easy}% Easy • ${medium}% Medium • ${hard}% Hard (100% Total)`;
+                    if (balanceBtn) balanceBtn.style.display = 'none';
+                } else {
+                    statusBox.className = 'difficulty-status-alert invalid';
+                    statusText.textContent = `⚠️ Difficulty totals ${total}% (must equal exactly 100%).`;
+                    if (balanceBtn) balanceBtn.style.display = 'inline-block';
+                }
+            }
+        }
+
+        function autoBalanceDifficulty() {
+            difficulty.easy = 30;
+            difficulty.medium = 40;
+            difficulty.hard = 30;
+
+            ['easy', 'medium', 'hard'].forEach(k => {
+                const s = document.getElementById(`${k}-slider`);
+                const n = document.getElementById(`${k}-num`);
+                if (s) s.value = difficulty[k];
+                if (n) n.value = difficulty[k];
+            });
+
+            updateDifficultyUI();
+            showToast('Difficulty balanced to 30% Easy / 40% Medium / 30% Hard.');
+        }
+
+        // ----------------------------------------------------
+        // 4. Sections Configuration
+        // ----------------------------------------------------
         function renderSections() {
             const tbody = document.getElementById('sections-tbody');
             tbody.innerHTML = '';
             let totalMarks = 0;
+            let totalQuestions = 0;
 
             sections.forEach((sec, idx) => {
                 const subtotal = sec.markValue * sec.count;
                 totalMarks += subtotal;
+                totalQuestions += sec.count;
 
                 const tr = document.createElement('tr');
+                tr.className = 'section-row-card';
+
+                let typeBadge = '';
+                if (sec.markValue === 1 && sec.isMCQ) {
+                    typeBadge = '<span class="section-tag-pill">MCQ</span> 4 options';
+                } else if (sec.markValue === 1 && !sec.isMCQ) {
+                    typeBadge = '<span class="section-tag-pill">Short Answer</span> 1 direct sentence';
+                } else if (sec.markValue <= 3) {
+                    typeBadge = '<span class="section-tag-pill">Descriptive</span> Brief answer';
+                } else {
+                    typeBadge = '<span class="section-tag-pill">Long Answer</span> Detailed essay';
+                }
+
                 tr.innerHTML = `
                     <td>
-                        <input type="number" min="1" value="${sec.markValue}" onchange="updateSection(${idx}, 'markValue', this.value)">
+                        <input type="number" min="1" max="100" class="form-input" style="padding:6px 10px; font-weight:700;" value="${sec.markValue}" onchange="updateSection(${idx}, 'markValue', this.value)">
                     </td>
                     <td>
-                        <input type="number" min="1" value="${sec.count}" onchange="updateSection(${idx}, 'count', this.value)">
+                        <input type="number" min="1" max="100" class="form-input" style="padding:6px 10px; font-weight:700;" value="${sec.count}" onchange="updateSection(${idx}, 'count', this.value)">
                     </td>
                     <td>
+                        <div style="font-size:0.82rem; color:var(--slate);">
+                            ${typeBadge}
+                        </div>
                         ${sec.markValue === 1 ? `
-                            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                            <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.75rem; color:var(--muted); margin-top:4px;">
                                 <input type="checkbox" ${sec.isMCQ ? 'checked' : ''} onchange="updateSection(${idx}, 'isMCQ', this.checked)">
-                                <span>MCQ (4 Options)</span>
+                                <span>4-Option MCQ</span>
                             </label>
-                        ` : '<span style="color:var(--muted);">-</span>'}
+                        ` : ''}
                     </td>
-                    <td style="text-align: right; font-weight: 700; color: var(--primary);">
+                    <td style="text-align: right; font-weight: 700; color: var(--primary); font-size:0.95rem;">
                         ${subtotal} pts
                     </td>
                     <td style="text-align: right;">
-                        <button class="btn-delete-row" onclick="deleteSectionRow(${idx})" title="Delete Section">✕</button>
+                        <button type="button" class="btn-remove-file" onclick="deleteSectionRow(${idx})" title="Remove section" style="width:28px; height:28px; font-size:0.8rem;">✕</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('grand-total-marks').textContent = totalMarks + ' pts';
+            document.getElementById('grand-total-marks').textContent = `${totalMarks} pts`;
+            document.getElementById('grand-total-qcount').textContent = `${totalQuestions} Total Questions`;
+            document.getElementById('formula-running-total').textContent = `Total: ${totalMarks} marks | ${totalQuestions} questions`;
         }
 
         function addSectionRow(markValue = 2, count = 3, isMCQ = false) {
@@ -1417,7 +2335,7 @@
 
         function deleteSectionRow(idx) {
             if (sections.length <= 1) {
-                showToast('⚠️ Must keep at least one section');
+                showToast('⚠️ Must keep at least one question section.');
                 return;
             }
             sections.splice(idx, 1);
@@ -1436,24 +2354,31 @@
             renderSections();
         }
 
-        function setMode(mode) {
-            selectedMode = mode;
-            document.getElementById('mode-async').classList.toggle('selected', mode === 'async');
-            document.getElementById('mode-sync').classList.toggle('selected', mode === 'sync');
-        }
-
-        // Tab Switching
+        // ----------------------------------------------------
+        // Tabs: Configuration vs Preview
+        // ----------------------------------------------------
         function switchTab(tab) {
             document.getElementById('tab-config-btn').classList.toggle('active', tab === 'config');
             document.getElementById('tab-preview-btn').classList.toggle('active', tab === 'preview');
             document.getElementById('view-config').style.display = tab === 'config' ? 'block' : 'none';
             document.getElementById('view-preview').style.display = tab === 'preview' ? 'block' : 'none';
+            if (tab === 'preview') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
-        // Generate Execution
+        // ----------------------------------------------------
+        // Generation Execution via Async Pipeline
+        // ----------------------------------------------------
         async function generatePaper() {
             if (!uploadedFile) {
-                showToast('⚠️ Please upload a textbook (PDF or Word .docx) first!');
+                showToast('⚠️ Please upload a textbook or study material (PDF or Word .docx) first!');
+                return;
+            }
+
+            const diffSum = difficulty.easy + difficulty.medium + difficulty.hard;
+            if (diffSum !== 100) {
+                showToast(`⚠️ Difficulty totals ${diffSum}%. Please balance it to exactly 100%.`);
                 return;
             }
 
@@ -1476,62 +2401,55 @@
             const progressLogs = document.getElementById('progress-logs');
 
             progressCard.style.display = 'block';
+            progressCard.scrollIntoView({ behavior: 'smooth' });
             progressFill.style.width = '10%';
-            progressStatus.textContent = 'Uploading source document...';
-            progressLogs.innerHTML = `> [${new Date().toLocaleTimeString()}] Submitting request to FastAPI (${providerVal.toUpperCase()})...<br>`;
+            progressStatus.textContent = 'Submitting request to background worker...';
+            if (progressLogs) {
+                progressLogs.innerHTML = `> [${new Date().toLocaleTimeString()}] Request dispatched to FastAPI (${providerVal.toUpperCase()})...<br>`;
+            }
+
+            setStepNodeStatus(1, 'active');
 
             try {
-                if (selectedMode === 'async') {
-                    // ASYNC TASK QUEUE (Plan 2)
-                    const res = await fetch('/api/v1/exam-papers/generate-async', {
-                        method: 'POST',
-                        body: formData
-                    });
+                // ASYNC TASK QUEUE WORKFLOW
+                const res = await fetch(apiUrl('/api/v1/exam-papers/generate-async'), {
+                    method: 'POST',
+                    body: formData
+                });
 
-                    if (!res.ok) {
-                        const err = await res.json();
-                        throw new Error(err.details || err.detail || err.error || 'Failed to enqueue task');
-                    }
-
-                    const data = await res.json();
-                    activeTaskId = data.task_id;
-                    progressLogs.innerHTML += `> Task ID: ${activeTaskId}<br>> Status: Enqueued (${providerVal.toUpperCase()}). Starting background polling...<br>`;
-                    pollTaskProgress(activeTaskId, chapters);
-
-                } else {
-                    // SYNC DROP-IN (page 6.tsx equivalent)
-                    progressFill.style.width = '50%';
-                    progressStatus.textContent = `Generating questions with ${providerVal.toUpperCase()} Engine (Sync)...`;
-                    progressLogs.innerHTML += `> Waiting for ${providerVal.toUpperCase()} model completion...<br>`;
-
-                    const res = await fetch('/api/exam/generate-questions', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (!res.ok) {
-                        const err = await res.json();
-                        throw new Error(err.details || err.detail || err.error || 'Sync generation failed');
-                    }
-
-                    const paper = await res.json();
-                    progressFill.style.width = '100%';
-                    progressStatus.textContent = 'Question Paper Complete!';
-                    currentPaperData = paper;
-                    renderPaperPreview(paper, chapters);
-                    btn.disabled = false;
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.details || err.detail || err.error || 'Failed to enqueue task');
                 }
+
+                const data = await res.json();
+                activeTaskId = data.task_id;
+                if (progressLogs) {
+                    progressLogs.innerHTML += `> Task ID: ${activeTaskId}<br>> Status: Enqueued (${providerVal.toUpperCase()}). Starting background polling...<br>`;
+                }
+                setStepNodeStatus(1, 'complete');
+                setStepNodeStatus(2, 'active');
+                pollTaskProgress(activeTaskId, chapters);
 
             } catch (err) {
                 console.error(err);
                 progressStatus.textContent = '❌ Generation Failed';
-                progressLogs.innerHTML += `<span style="color:#ef4444;">> ERROR: ${err.message}</span><br>`;
+                if (progressLogs) {
+                    progressLogs.innerHTML += `<span style="color:#ef4444;">> ERROR: ${escapeHtml(err.message)}</span><br>`;
+                }
                 showToast('❌ ' + err.message);
                 btn.disabled = false;
             }
         }
 
-        // Polling loop for Plan 2
+        function setStepNodeStatus(nodeIndex, status) {
+            const el = document.getElementById(`node-step-${nodeIndex}`);
+            if (!el) return;
+            el.className = 'step-flow-node';
+            if (status === 'active') el.classList.add('active');
+            if (status === 'complete') el.classList.add('complete');
+        }
+
         function pollTaskProgress(taskId, chapters) {
             const progressFill = document.getElementById('progress-fill');
             const progressStatus = document.getElementById('progress-status-text');
@@ -1542,7 +2460,7 @@
 
             pollInterval = setInterval(async () => {
                 try {
-                    const res = await fetch(`/api/v1/tasks/${taskId}`);
+                    const res = await fetch(apiUrl(`/api/v1/tasks/${taskId}`));
                     if (!res.ok) throw new Error('Polling error');
                     const task = await res.json();
 
@@ -1552,20 +2470,28 @@
                         progressFill.style.width = task.progress + '%';
                     }
 
-                    if (task.logs && task.logs.length) {
-                        progressLogs.innerHTML = task.logs.map(l => `> ${l}`).join('<br>');
+                    if (task.progress >= 30) {
+                        setStepNodeStatus(2, 'complete');
+                        setStepNodeStatus(3, 'active');
+                    }
+                    if (task.progress >= 80) {
+                        setStepNodeStatus(3, 'complete');
+                        setStepNodeStatus(4, 'active');
+                    }
+
+                    if (task.logs && task.logs.length && progressLogs) {
+                        progressLogs.innerHTML = task.logs.map(l => `> ${escapeHtml(l)}`).join('<br>');
                         progressLogs.scrollTop = progressLogs.scrollHeight;
                     }
 
                     if (task.status === 'COMPLETED') {
                         clearInterval(pollInterval);
                         btn.disabled = false;
+                        setStepNodeStatus(4, 'complete');
                         showToast('🎉 Question Paper Generated Successfully!');
 
                         currentPaperData = task.result;
-                        // Set download link
-                        document.getElementById('btn-download-docx').href = `/api/v1/tasks/${taskId}/download/docx`;
-
+                        document.getElementById('btn-download-docx').href = apiUrl(`/api/v1/tasks/${taskId}/download/docx`);
                         renderPaperPreview(task.result, chapters);
 
                     } else if (task.status === 'FAILED') {
@@ -1573,15 +2499,20 @@
                         btn.disabled = false;
                         progressStatus.textContent = '❌ Task Failed';
                         progressFill.style.width = '0%';
-                        progressLogs.innerHTML = `<span style="color:#ef4444;">${escapeHtml(task.error || 'Unknown error')}</span>`;
+                        if (progressLogs) {
+                            progressLogs.innerHTML += `<br><span style="color:#ef4444;">${escapeHtml(task.error || 'Unknown error')}</span>`;
+                        }
+                        showToast('❌ Task Failed: ' + (task.error || 'Check provider credentials'));
                     }
                 } catch (e) {
-                    console.error('Poll failed:', e);
+                    console.warn('Poll failed:', e);
                 }
             }, 1000);
         }
 
+        // ----------------------------------------------------
         // Render Generated Paper
+        // ----------------------------------------------------
         function renderPaperPreview(paper, chapters) {
             document.getElementById('tab-preview-btn').disabled = false;
             switchTab('preview');
@@ -1590,7 +2521,7 @@
             let html = `
                 <div class="paper-header">
                     <div class="paper-school">EXAMINATION ASSESSMENT</div>
-                    <div class="paper-title">${escapeHtml(paper.title)}</div>
+                    <div class="paper-title">${escapeHtml(paper.title || 'Official Question Paper')}</div>
                     <div class="paper-meta">
                         <span>Chapters: ${escapeHtml(chapters)}</span>
                         <span>Time Allowed: 3 Hours</span>
@@ -1599,38 +2530,44 @@
                 </div>
             `;
 
-
             let qIndex = 1;
             paper.sections.forEach((sec, sIdx) => {
                 const secChar = String.fromCharCode(65 + sIdx);
                 html += `
                     <div class="section-header">
-                        <span class="section-tag">SECTION ${secChar}</span>
-                        <span class="section-desc">Each question carries ${sec.markValue} Mark(s)</span>
+                        <span>SECTION ${secChar}</span>
+                        <span style="font-size:0.8rem; font-weight:500;">Each question carries ${sec.markValue} Mark(s)</span>
                     </div>
                 `;
 
                 sec.questions.forEach((q) => {
                     html += `
                         <div class="question-item">
-                            <span class="q-number">${qIndex}.</span>
-                            <span class="q-mark">[${sec.markValue}]</span>
-                            <div class="q-text">${escapeHtml(q.text)}</div>
+                            <div class="q-row">
+                                <span class="q-number">${qIndex}.</span>
+                                <div class="q-text">${escapeHtml(q.text)}</div>
+                                <span class="q-mark">[${sec.markValue}]</span>
+                            </div>
                     `;
 
                     if (q.type === 'MCQ' && q.options && q.options.length) {
                         html += '<div class="options-grid">';
                         q.options.forEach(opt => {
+                            const isCorrect = opt.includes('*');
                             const clean = opt.replace('*', '').trim();
-                            html += `<div class="option-box">${escapeHtml(clean)}</div>`;
+                            html += `
+                                <div class="option-box ${isCorrect ? 'correct' : ''}">
+                                    ${escapeHtml(clean)} ${isCorrect ? '<span style="font-size:0.75rem; color:#166534;">(Correct)</span>' : ''}
+                                </div>
+                            `;
                         });
                         html += '</div>';
                     }
 
                     html += `
-                            <div>
-                                <span class="badge-diff">${q.difficulty}</span>
-                                <span class="badge-diff" style="margin-left:4px;">${escapeHtml(q.topic)}</span>
+                            <div style="margin-left: 40px; margin-top: 6px; display: flex; gap: 6px;">
+                                <span class="badge-diff">${escapeHtml(q.difficulty)}</span>
+                                <span class="badge-diff" style="color: var(--primary); background: var(--primary-light);">${escapeHtml(q.topic || 'Subject Topic')}</span>
                             </div>
                         </div>
                     `;
@@ -1641,27 +2578,12 @@
             container.innerHTML = html;
         }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.style.display = 'block';
-            setTimeout(() => { t.style.display = 'none'; }, 4000);
-        }
-
-        // ========================================================
-        // LLM CONFIGURATION MODAL & API LOGIC
-        // ========================================================
-        let llmConfigData = null;
-        let currentModalTab = 'groq';
-
+        // ----------------------------------------------------
+        // LLM Configuration Modal Logic
+        // ----------------------------------------------------
         async function fetchLLMConfig() {
             try {
-                const res = await fetch('/api/v1/config/llm');
+                const res = await fetch(apiUrl('/api/v1/config/llm'));
                 if (!res.ok) return;
                 llmConfigData = await res.json();
                 applyConfigToUI(llmConfigData);
@@ -1670,31 +2592,36 @@
             }
         }
 
+        const providerLogos = {
+            groq: 'static/Groq.png',
+            openai: 'static/chatgpt.png',
+            gemini: 'static/gemini.jpg',
+            nim: 'static/nvidia.png'
+        };
+
         function applyConfigToUI(data) {
             if (!data) return;
 
-            // Update active provider select on the main page
             const provSelect = document.getElementById('llm-provider-select');
-            if (provSelect) {
-                provSelect.value = data.active_provider;
+            if (provSelect) provSelect.value = data.active_provider;
+
+            const modalSelect = document.getElementById('modal-active-provider-select');
+            if (modalSelect) modalSelect.value = data.active_provider;
+
+            const headerBadge = document.getElementById('header-provider-name');
+            if (headerBadge) {
+                headerBadge.textContent = `Engine: ${data.active_provider.toUpperCase()}`;
             }
 
-            // Update top navigation badge
-            const navText = document.getElementById('nav-llm-text');
-            if (navText) {
-                const provName = data.active_provider.toUpperCase();
-                const activeModel = data.providers[data.active_provider]?.model || '';
-                navText.textContent = `Active: ${provName}`;
+            const headerLogo = document.getElementById('header-active-provider-logo');
+            if (headerLogo && providerLogos[data.active_provider]) {
+                headerLogo.src = providerLogos[data.active_provider];
             }
 
-            // Update caption
             const activeModel = data.providers[data.active_provider]?.model || '';
             const caption = document.getElementById('current-active-model-label');
-            if (caption) {
-                caption.textContent = activeModel;
-            }
+            if (caption) caption.textContent = activeModel;
 
-            // Populate modal inputs and status badges
             ['groq', 'openai', 'gemini', 'nim'].forEach(prov => {
                 const info = data.providers[prov];
                 if (!info) return;
@@ -1713,9 +2640,7 @@
                 }
 
                 const modelInput = document.getElementById(`model-input-${prov}`);
-                if (modelInput && info.model) {
-                    modelInput.value = info.model;
-                }
+                if (modelInput && info.model) modelInput.value = info.model;
 
                 if (prov === 'nim' && info.base_url) {
                     const urlInput = document.getElementById('nim-base-url-input');
@@ -1735,6 +2660,14 @@
             document.getElementById('llm-config-modal').style.display = 'none';
         }
 
+        function openHelpModal() {
+            document.getElementById('help-modal').style.display = 'flex';
+        }
+
+        function closeHelpModal() {
+            document.getElementById('help-modal').style.display = 'none';
+        }
+
         function switchProviderTab(prov) {
             currentModalTab = prov;
             document.querySelectorAll('.prov-tab-btn').forEach(btn => {
@@ -1743,7 +2676,6 @@
             document.querySelectorAll('.prov-card-pane').forEach(pane => {
                 pane.classList.toggle('active', pane.id === `pane-${prov}`);
             });
-            // Clear test boxes
             document.querySelectorAll('.test-result-box').forEach(b => {
                 b.className = 'test-result-box';
                 b.textContent = '';
@@ -1775,6 +2707,16 @@
                 const caption = document.getElementById('current-active-model-label');
                 if (caption) caption.textContent = model;
             }
+            const modalSelect = document.getElementById('modal-active-provider-select');
+            if (modalSelect) modalSelect.value = val;
+            const headerBadge = document.getElementById('header-provider-name');
+            if (headerBadge) {
+                headerBadge.textContent = `Engine: ${val.toUpperCase()}`;
+            }
+            const headerLogo = document.getElementById('header-active-provider-logo');
+            if (headerLogo && providerLogos[val]) {
+                headerLogo.src = providerLogos[val];
+            }
         }
 
         async function testProviderConnection(prov) {
@@ -1794,7 +2736,7 @@
             };
 
             try {
-                const res = await fetch('/api/v1/config/llm/test', {
+                const res = await fetch(apiUrl('/api/v1/config/llm/test'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -1816,6 +2758,11 @@
         function setActiveProviderFromModal(prov) {
             const selectEl = document.getElementById('modal-active-provider-select');
             if (selectEl) selectEl.value = prov;
+            const headerSelect = document.getElementById('llm-provider-select');
+            if (headerSelect) {
+                headerSelect.value = prov;
+                onProviderSelectChanged(prov);
+            }
             showToast(`Selected ${prov.toUpperCase()} as active provider.`);
         }
 
@@ -1825,9 +2772,7 @@
             saveBtn.textContent = 'Saving...';
 
             const activeProv = document.getElementById('modal-active-provider-select').value;
-            const payload = {
-                active_provider: activeProv
-            };
+            const payload = { active_provider: activeProv };
 
             ['groq', 'openai', 'gemini', 'nim'].forEach(prov => {
                 const keyInput = document.getElementById(`key-input-${prov}`);
@@ -1846,7 +2791,7 @@
             }
 
             try {
-                const res = await fetch('/api/v1/config/llm', {
+                const res = await fetch(apiUrl('/api/v1/config/llm'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -1867,192 +2812,17 @@
             }
         }
 
-        // Initialize LLM config on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchLLMConfig();
-        });
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            setTimeout(() => { t.style.display = 'none'; }, 4000);
+        }
     </script>
-
-    <!-- ======================================================== -->
-    <!-- LLM CONFIGURATION MODAL DIALOG                           -->
-    <!-- ======================================================== -->
-    <div class="modal-overlay" id="llm-config-modal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3>⚙️ AI Model Engines & API Keys</h3>
-                <button class="modal-close-btn" onclick="closeLLMConfigModal()" title="Close">✕</button>
-            </div>
-
-            <div class="modal-body">
-                <!-- Navigation Tabs -->
-                <div class="prov-nav">
-                    <button type="button" class="prov-tab-btn active" data-prov="groq" onclick="switchProviderTab('groq')">⚡ Groq</button>
-                    <button type="button" class="prov-tab-btn" data-prov="openai" onclick="switchProviderTab('openai')">🧠 OpenAI</button>
-                    <button type="button" class="prov-tab-btn" data-prov="gemini" onclick="switchProviderTab('gemini')">✨ Google Gemini</button>
-                    <button type="button" class="prov-tab-btn" data-prov="nim" onclick="switchProviderTab('nim')">🚀 NVIDIA NIM</button>
-                </div>
-
-                <!-- 1. GROQ PANE -->
-                <div class="prov-card-pane active" id="pane-groq">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span style="font-weight: 700; color: var(--dark);">⚡ Groq Cloud LPU</span>
-                        <span id="badge-cfg-groq" style="font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Checking...</span>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Groq API Key</label>
-                        <div class="key-input-wrapper">
-                            <input type="password" id="key-input-groq" class="form-input" placeholder="Enter gsk_... or leave empty to keep current">
-                            <button type="button" id="eye-btn-groq" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-groq', 'eye-btn-groq')">👁️</button>
-                        </div>
-                        <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Get your key from <a href="https://console.groq.com/keys" target="_blank" style="color: var(--primary);">console.groq.com</a></p>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Model Presets</label>
-                        <select class="form-input" onchange="onPresetSelect('groq', this.value)" style="margin-bottom: 6px;">
-                            <option value="">-- Choose preset model --</option>
-                            <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b (Default Recommended)</option>
-                            <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
-                            <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
-                            <option value="gemma2-9b-it">gemma2-9b-it</option>
-                        </select>
-                        <input type="text" id="model-input-groq" class="form-input" value="qwen/qwen3.8-27b" placeholder="Model identifier">
-                    </div>
-
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-action" onclick="testProviderConnection('groq')">🔌 Test Connection</button>
-                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('groq')">⭐ Set Active</button>
-                    </div>
-                    <div id="test-result-groq" class="test-result-box"></div>
-                </div>
-
-                <!-- 2. OPENAI PANE -->
-                <div class="prov-card-pane" id="pane-openai">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span style="font-weight: 700; color: var(--dark);">🧠 OpenAI API</span>
-                        <span id="badge-cfg-openai" style="font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Checking...</span>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">OpenAI API Key</label>
-                        <div class="key-input-wrapper">
-                            <input type="password" id="key-input-openai" class="form-input" placeholder="sk-proj-...">
-                            <button type="button" id="eye-btn-openai" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-openai', 'eye-btn-openai')">👁️</button>
-                        </div>
-                        <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Get your key from <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--primary);">platform.openai.com</a></p>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Model Presets</label>
-                        <select class="form-input" onchange="onPresetSelect('openai', this.value)" style="margin-bottom: 6px;">
-                            <option value="">-- Choose preset model --</option>
-                            <option value="gpt-4o-mini">gpt-4o-mini (Fast & Cost-Efficient)</option>
-                            <option value="gpt-4o">gpt-4o (High-Precision Academic Reasoning)</option>
-                            <option value="gpt-4-turbo">gpt-4-turbo</option>
-                            <option value="o1-mini">o1-mini</option>
-                        </select>
-                        <input type="text" id="model-input-openai" class="form-input" value="gpt-4o-mini" placeholder="Model identifier">
-                    </div>
-
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-action" onclick="testProviderConnection('openai')">🔌 Test Connection</button>
-                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('openai')">⭐ Set Active</button>
-                    </div>
-                    <div id="test-result-openai" class="test-result-box"></div>
-                </div>
-
-                <!-- 3. GEMINI PANE -->
-                <div class="prov-card-pane" id="pane-gemini">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span style="font-weight: 700; color: var(--dark);">✨ Google Gemini API</span>
-                        <span id="badge-cfg-gemini" style="font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Checking...</span>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Google Gemini API Key</label>
-                        <div class="key-input-wrapper">
-                            <input type="password" id="key-input-gemini" class="form-input" placeholder="AIzaSy...">
-                            <button type="button" id="eye-btn-gemini" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-gemini', 'eye-btn-gemini')">👁️</button>
-                        </div>
-                        <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary);">aistudio.google.com</a></p>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Model Presets</label>
-                        <select class="form-input" onchange="onPresetSelect('gemini', this.value)" style="margin-bottom: 6px;">
-                            <option value="">-- Choose preset model --</option>
-                            <option value="gemini-1.5-flash">gemini-1.5-flash (Recommended)</option>
-                            <option value="gemini-1.5-pro">gemini-1.5-pro (Complex Analytical)</option>
-                            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
-                        </select>
-                        <input type="text" id="model-input-gemini" class="form-input" value="gemini-1.5-flash" placeholder="Model identifier">
-                    </div>
-
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-action" onclick="testProviderConnection('gemini')">🔌 Test Connection</button>
-                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('gemini')">⭐ Set Active</button>
-                    </div>
-                    <div id="test-result-gemini" class="test-result-box"></div>
-                </div>
-
-                <!-- 4. NVIDIA NIM PANE -->
-                <div class="prov-card-pane" id="pane-nim">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span style="font-weight: 700; color: var(--dark);">🚀 NVIDIA NIM (Cloud or On-Prem)</span>
-                        <span id="badge-cfg-nim" style="font-size: 0.72rem; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Checking...</span>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">NVIDIA API Key</label>
-                        <div class="key-input-wrapper">
-                            <input type="password" id="key-input-nim" class="form-input" placeholder="nvapi-...">
-                            <button type="button" id="eye-btn-nim" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-nim', 'eye-btn-nim')">👁️</button>
-                        </div>
-                        <p style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">Get your key from <a href="https://build.nvidia.com" target="_blank" style="color: var(--primary);">build.nvidia.com</a></p>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">NIM Base URL</label>
-                        <input type="text" id="nim-base-url-input" class="form-input" value="https://integrate.api.nvidia.com/v1" placeholder="https://integrate.api.nvidia.com/v1 or http://localhost:8000/v1">
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Model Presets</label>
-                        <select class="form-input" onchange="onPresetSelect('nim', this.value)" style="margin-bottom: 6px;">
-                            <option value="">-- Choose preset model --</option>
-                            <option value="meta/llama-3.1-70b-instruct">meta/llama-3.1-70b-instruct (Recommended)</option>
-                            <option value="mistralai/mixtral-8x22b-instruct">mistralai/mixtral-8x22b-instruct</option>
-                            <option value="nvidia/llama-3.1-nemotron-70b-instruct">nvidia/llama-3.1-nemotron-70b-instruct</option>
-                        </select>
-                        <input type="text" id="model-input-nim" class="form-input" value="meta/llama-3.1-70b-instruct" placeholder="Model identifier">
-                    </div>
-
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-action" onclick="testProviderConnection('nim')">🔌 Test Connection</button>
-                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('nim')">⭐ Set Active</button>
-                    </div>
-                    <div id="test-result-nim" class="test-result-box"></div>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="modal-footer">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 0.82rem; font-weight: 600; color: var(--slate);">Active Provider:</span>
-                    <select id="modal-active-provider-select" class="form-input" style="padding: 6px 10px; font-size: 0.82rem; width: auto; font-weight: 600;">
-                        <option value="groq">⚡ Groq</option>
-                        <option value="openai">🧠 OpenAI</option>
-                        <option value="gemini">✨ Gemini</option>
-                        <option value="nim">🚀 NVIDIA NIM</option>
-                    </select>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button type="button" class="btn-action" onclick="closeLLMConfigModal()">Cancel</button>
-                    <button type="button" class="btn-action btn-primary-action" id="btn-save-llm-config" onclick="saveLLMConfig()">💾 Save Settings</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>

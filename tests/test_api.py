@@ -18,6 +18,8 @@ def test_serve_ui_home():
     assert res.status_code == 200
     assert "text/html" in res.headers.get("content-type", "")
     assert "AI Question Paper Generator" in res.text
+    assert "Processing Engine Mode" not in res.text
+    assert "/api/v1/exam-papers/generate-async" in res.text
 
 def test_ui_redirect_aliases():
     res_index = client.get("/index", follow_redirects=False)

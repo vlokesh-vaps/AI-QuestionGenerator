@@ -1,14 +1,28 @@
 import os
 import shutil
 from pathlib import Path
-from typing import List
+from typing import List, Union
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from app.core.middleware import sanitize_url_prefix
+
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "AI Question Paper Generator"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
     
+    # Server & Reverse-Proxy Configuration
+    HOST: str = "0.0.0.0"
+    PORT: int = 8050
+    APPLICATION_ROOT: str = ""
+    URL_PREFIX: str = ""
+    PUBLIC_ORIGIN: str = ""
+    TRUSTED_PROXIES: List[str] = ["*"]
+    MAX_UPLOAD_SIZE_MB: int = 50
+    MAX_FILE_SIZE_MB: int = 50
+    CORS_ORIGINS: List[str] = ["*"]
+
     # Base Directory
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
     STORAGE_DIR: Path = BASE_DIR / "storage"
@@ -45,12 +59,8 @@ class Settings(BaseSettings):
     CHUNK_SIZE: int = 3000           # Target chunk size in tokens
     
     # Document Scale Limits
-    MAX_FILE_SIZE_MB: int = 50       # Supports DOCX files up to 50 MB
     MAX_PDF_PAGES: int = 500         # Supports PDFs up to 500 pages
     MAX_QUESTION_PAPER_MARKS: int = 1000  # Supports up to 1,000 total marks for final paper
-    
-    # CORS Configuration
-    CORS_ORIGINS: List[str] = ["*"]
     
     # Generation parameters
     MAX_CONTEXT_CHARS: int = 50000
@@ -60,6 +70,47 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore"
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def sanitize_and_sync_env(cls, data):
+        if isinstance(data, dict):
+            # 1. Defensively sanitize APPLICATION_ROOT / URL_PREFIX
+            raw_root = data.get("APPLICATION_ROOT") or data.get("URL_PREFIX") or ""
+            clean_root = sanitize_url_prefix(raw_root)
+            data["APPLICATION_ROOT"] = clean_root
+            data["URL_PREFIX"] = clean_root
+
+            # 2. Normalize PUBLIC_ORIGIN
+            raw_origin = data.get("PUBLIC_ORIGIN")
+            if raw_origin:
+                origin_str = str(raw_origin).strip().rstrip("/")
+                data["PUBLIC_ORIGIN"] = origin_str
+
+            # 3. Synchronize MAX_UPLOAD_SIZE_MB and MAX_FILE_SIZE_MB
+            upload_mb = data.get("MAX_UPLOAD_SIZE_MB")
+            file_mb = data.get("MAX_FILE_SIZE_MB")
+            if upload_mb is not None:
+                mb_val = int(upload_mb)
+                data["MAX_UPLOAD_SIZE_MB"] = mb_val
+                data["MAX_FILE_SIZE_MB"] = mb_val
+            elif file_mb is not None:
+                mb_val = int(file_mb)
+                data["MAX_UPLOAD_SIZE_MB"] = mb_val
+                data["MAX_FILE_SIZE_MB"] = mb_val
+
+            # 4. Parse CORS_ORIGINS if string
+            cors = data.get("CORS_ORIGINS")
+            if isinstance(cors, str):
+                data["CORS_ORIGINS"] = [orig.strip() for orig in cors.split(",") if orig.strip()]
+
+            # 5. Parse TRUSTED_PROXIES if string
+            proxies = data.get("TRUSTED_PROXIES")
+            if isinstance(proxies, str):
+                data["TRUSTED_PROXIES"] = [p.strip() for p in proxies.split(",") if p.strip()]
+
+        return data
+
 
 settings = Settings()
 

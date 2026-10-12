@@ -44,43 +44,75 @@ class LLMExamEngine:
         self._init_client()
 
     def _init_client(self):
-        """Initializes client adapter based on chosen provider."""
+        """Initializes LangChain chat model adapter based on chosen provider."""
         if self.provider == "openai":
-            import openai
+            from langchain_openai import ChatOpenAI
             self.api_key = self.api_key or settings.OPENAI_API_KEY
             self.model = self.model or settings.OPENAI_MODEL
             if not self.api_key:
                 logger.warning("OPENAI_API_KEY is not configured! OpenAI calls will fail unless provided.")
-            self.client = openai.OpenAI(api_key=self.api_key)
+                self.client = None
+            else:
+                self.client = ChatOpenAI(
+                    model=self.model,
+                    api_key=self.api_key,
+                    temperature=0.5,
+                    max_tokens=3500,
+                    model_kwargs={"response_format": {"type": "json_object"}}
+                )
 
         elif self.provider == "nim":
-            import openai
+            from langchain_openai import ChatOpenAI
             self.api_key = self.api_key or settings.NIM_API_KEY
             self.model = self.model or settings.NIM_MODEL
             self.base_url = self.base_url or settings.NIM_BASE_URL
             if not self.api_key:
                 logger.warning("NIM_API_KEY is not configured! NIM calls will fail unless provided.")
-            self.client = openai.OpenAI(base_url=self.base_url, api_key=self.api_key)
+                self.client = None
+            else:
+                self.client = ChatOpenAI(
+                    model=self.model,
+                    api_key=self.api_key,
+                    base_url=self.base_url,
+                    temperature=0.5,
+                    max_tokens=3500,
+                    model_kwargs={"response_format": {"type": "json_object"}}
+                )
 
         elif self.provider == "gemini":
-            import google.generativeai as genai
+            from langchain_google_genai import ChatGoogleGenerativeAI
             self.api_key = self.api_key or settings.GEMINI_API_KEY
             self.model = self.model or settings.GEMINI_MODEL
             if not self.api_key:
                 logger.warning("GEMINI_API_KEY is not configured! Gemini calls will fail unless provided.")
-            genai.configure(api_key=self.api_key)
-            self.client = genai
+                self.client = None
+            else:
+                self.client = ChatGoogleGenerativeAI(
+                    model=self.model,
+                    google_api_key=self.api_key,
+                    temperature=0.5,
+                    max_output_tokens=3500,
+                    response_mime_type="application/json"
+                )
 
         else:
-            from groq import Groq
+            from langchain_groq import ChatGroq
             self.provider = "groq"
             self.api_key = self.api_key or settings.GROQ_API_KEY
             self.model = self.model or settings.GROQ_MODEL
             if not self.api_key:
                 logger.warning("GROQ_API_KEY is not configured! Groq calls will fail unless provided.")
-            self.client = Groq(api_key=self.api_key)
+                self.client = None
+            else:
+                self.client = ChatGroq(
+                    model=self.model,
+                    api_key=self.api_key,
+                    temperature=0.5,
+                    max_tokens=3500,
+                    model_kwargs={"response_format": {"type": "json_object"}}
+                )
 
-        logger.info(f"[LLM Engine] Active provider: '{self.provider}', Model: '{self.model}'.")
+        logger.info(f"[LLM Engine] Active provider: '{self.provider}', Model: '{self.model}' (LangChain adapter).")
 
     def generate_question_paper(
         self,
@@ -185,36 +217,34 @@ class LLMExamEngine:
         return final_paper
 
     def _call_provider_chat(self, prompt: str) -> str:
-        """Dispatches chat request to selected provider with JSON output enforcement."""
-        if self.provider in ["groq", "openai", "nim"]:
-            chat_completion = self.client.chat.completions.create(
-                messages=[{"role": "user", "content": prompt}],
-                model=self.model,
-                temperature=0.5,
-                max_tokens=3500,
-                response_format={"type": "json_object"}
-            )
-            content = chat_completion.choices[0].message.content
-            if not content:
-                raise ValueError(f"Empty response from {self.provider.upper()} LLM.")
-            return content
+        """Dispatches chat request to selected provider via LangChain with JSON output enforcement."""
+        if self.client is None:
+            if not self.api_key:
+                raise ValueError(
+                    f"API Key for '{self.provider.upper()}' is missing. Please set it in .env or environment variables."
+                )
+            self._init_client()
+            if self.client is None:
+                raise ValueError(f"Failed to initialize LangChain client for '{self.provider.upper()}'.")
 
-        elif self.provider == "gemini":
-            model_instance = self.client.GenerativeModel(
-                model_name=self.model,
-                generation_config={
-                    "response_mime_type": "application/json",
-                    "temperature": 0.5,
-                    "max_output_tokens": 3500
-                }
-            )
-            response = model_instance.generate_content(prompt)
-            if not response or not response.text:
-                raise ValueError("Empty response from Gemini LLM.")
-            return response.text
+        from langchain_core.messages import HumanMessage
 
-        else:
-            raise ValueError(f"Unsupported LLM provider: {self.provider}")
+        messages = [HumanMessage(content=prompt)]
+        response = self.client.invoke(messages)
+        content = response.content
+
+        if isinstance(content, list):
+            content = "".join(
+                b.get("text", "") if isinstance(b, dict) else getattr(b, "text", str(b))
+                for b in content
+            )
+        elif not isinstance(content, str):
+            content = str(content) if content is not None else ""
+
+        if not content or not content.strip():
+            raise ValueError(f"Empty response from {self.provider.upper()} LLM.")
+
+        return content
 
     def _generate_for_chunk(
         self,

@@ -1,15 +1,18 @@
+import re
 from pathlib import Path
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from app.core.config import settings
+from app.core.middleware import ReverseProxyPrefixMiddleware
 from app.api.v1.router import api_router
 from app.api.v1.endpoints.exam_paper import router as exam_router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
+    root_path=settings.APPLICATION_ROOT,
     description="""
 ## 🎓 AI Question Paper Generator Backend (FastAPI)
 
@@ -25,13 +28,19 @@ Features:
     redoc_url="/redoc"
 )
 
-# CORS
+# CORS Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+# Reverse-Proxy Prefix & Forwarded Headers Middleware (runs outermost)
+app.add_middleware(
+    ReverseProxyPrefixMiddleware,
+    default_prefix=settings.APPLICATION_ROOT
 )
 
 # Mount static directory if it exists
@@ -45,24 +54,44 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 # Mount /api for direct backward compatibility with page 6.tsx route ('/api/exam/generate-questions')
 app.include_router(exam_router, prefix="/api")
 
+
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
-def serve_home():
-    """Serves the interactive web interface."""
+def serve_home(request: Request):
+    """Serves the interactive web interface with dynamic base path injection."""
+    base_path = request.scope.get("root_path", "") or settings.APPLICATION_ROOT or ""
     index_file = settings.BASE_DIR / "static" / "index.html"
     if index_file.exists():
-        return FileResponse(str(index_file), media_type="text/html")
-    return RedirectResponse(url="/docs")
+        with open(index_file, "r", encoding="utf-8") as f:
+            html = f.read()
+
+        meta_tag = f'<meta name="app-base" content="{base_path}">'
+        cfg_script = f'<script>window.__APP_CONFIG__ = Object.assign(window.__APP_CONFIG__ || {{}}, {{ basePath: "{base_path}" }}); window.__APP_BASE__ = "{base_path}";</script>'
+
+        if '<meta name="app-base"' in html:
+            html = re.sub(r'<meta\s+name=["\']app-base["\'][^>]*>', f'{meta_tag}\n    {cfg_script}', html)
+        elif "<head>" in html:
+            html = html.replace("<head>", f"<head>\n    {meta_tag}\n    {cfg_script}", 1)
+
+        return HTMLResponse(content=html, media_type="text/html")
+
+    target_docs = f"{base_path}/docs" if base_path else "/docs"
+    return RedirectResponse(url=target_docs)
+
 
 @app.get("/index", include_in_schema=False)
 @app.get("/index.html", include_in_schema=False)
-def serve_index_redirect():
-    """Redirect aliases for the index UI."""
-    return RedirectResponse(url="/")
+def serve_index_redirect(request: Request):
+    """Redirect aliases for the index UI preserving prefix."""
+    base_path = request.scope.get("root_path", "") or settings.APPLICATION_ROOT or ""
+    target = f"{base_path}/" if base_path else "/"
+    return RedirectResponse(url=target)
+
 
 @app.get("/health", tags=["Health"])
-def health_check():
-    """Health check endpoint checking server and Groq API key readiness."""
+def health_check(request: Request):
+    """Health check endpoint checking server, environment, and LLM readiness."""
     has_groq = bool(settings.GROQ_API_KEY)
+    base_path = request.scope.get("root_path", "") or settings.APPLICATION_ROOT or ""
     return {
         "status": "healthy",
         "active_provider": settings.LLM_PROVIDER,
@@ -74,5 +103,8 @@ def health_check():
             "nim": bool(settings.NIM_API_KEY)
         },
         "model": getattr(settings, f"{settings.LLM_PROVIDER.upper()}_MODEL", settings.GROQ_MODEL),
-        "version": settings.VERSION
+        "version": settings.VERSION,
+        "application_root": base_path,
+        "public_origin": settings.PUBLIC_ORIGIN,
+        "max_upload_size_mb": settings.MAX_UPLOAD_SIZE_MB
     }
