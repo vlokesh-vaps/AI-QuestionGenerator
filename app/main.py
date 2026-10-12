@@ -1,4 +1,6 @@
+import asyncio
 import re
+from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,11 +10,28 @@ from app.core.config import settings
 from app.core.middleware import ReverseProxyPrefixMiddleware
 from app.api.v1.router import api_router
 from app.api.v1.endpoints.exam_paper import router as exam_router
+from app.services.maintenance import run_periodic_maintenance
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manages application lifecycle including scheduled storage maintenance."""
+    maintenance_task = asyncio.create_task(run_periodic_maintenance())
+    try:
+        yield
+    finally:
+        maintenance_task.cancel()
+        try:
+            await maintenance_task
+        except asyncio.CancelledError:
+            pass
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     root_path=settings.APPLICATION_ROOT,
+    lifespan=lifespan,
     description="""
 ## 🎓 AI Question Paper Generator Backend (FastAPI)
 

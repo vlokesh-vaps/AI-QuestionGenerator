@@ -38,7 +38,7 @@ This repository contains a Python/FastAPI backend for generating exam question p
 | `app/services/docx_segmenter.py` | Finds and extracts headings/chapters from DOCX files. |
 | `app/services/marker_cache.py` | Caches marker indexes by uploaded-file hash under `storage/marker_cache/`. |
 | `app/services/token_chunker.py` | Splits content into token-budget-aware chunks for model calls. |
-| `app/services/llm_engine.py` and `llm_groq_engine.py` | Coordinates model providers and question generation. |
+| `app/services/llm_engine.py` | Coordinates model providers and question generation. |
 | `app/services/question_validator.py` / `content_sanitizer.py` | Checks and normalizes generated content. |
 | `app/services/docx_generator.py` | Builds the final Word question paper. |
 | `static/` | Browser-based project interface. |
