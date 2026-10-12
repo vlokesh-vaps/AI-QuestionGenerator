@@ -1322,6 +1322,48 @@
             color: var(--muted);
         }
 
+        .btn-clear-key {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-clear-key:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: #991b1b;
+        }
+
+        .btn-reset-model {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-reset-model:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+            color: #1e293b;
+        }
+
         .test-result-box {
             margin-top: 10px;
             padding: 8px 12px;
@@ -1768,7 +1810,10 @@
                     </div>
 
                     <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Groq API Key</label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label class="form-label" style="margin-bottom: 0;">Groq API Key</label>
+                            <button type="button" class="btn-clear-key" id="btn-del-key-groq" style="display: none;" onclick="deleteProviderKey('groq')">🗑️ Clear Key</button>
+                        </div>
                         <div class="key-input-wrapper">
                             <input type="password" id="key-input-groq" class="form-input" placeholder="Enter gsk_... or leave empty to keep current">
                             <button type="button" id="eye-btn-groq" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-groq', 'eye-btn-groq')">👁️</button>
@@ -1776,7 +1821,10 @@
                     </div>
 
                     <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Model Presets</label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label class="form-label" style="margin-bottom: 0;">Model Presets</label>
+                            <button type="button" class="btn-reset-model" onclick="resetProviderModel('groq')">↺ Default</button>
+                        </div>
                         <select class="form-input" onchange="onPresetSelect('groq', this.value)" style="margin-bottom: 6px;">
                             <option value="">-- Choose preset model --</option>
                             <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b (Default Recommended)</option>
@@ -1786,11 +1834,9 @@
                         <input type="text" id="model-input-groq" class="form-input" value="qwen/qwen3.8-27b" placeholder="Model identifier">
                     </div>
 
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-action" onclick="testProviderConnection('groq')">🔌 Test Connection</button>
-                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('groq')">⭐ Set Active</button>
+                    <div style="margin-top: 10px;">
+                        <button type="button" class="btn-action" style="width: 100%;" onclick="setActiveProviderFromModal('groq')">⭐ Set as Active Engine</button>
                     </div>
-                    <div id="test-result-groq" class="test-result-box"></div>
                 </div>
 
                 <!-- 2. OPENAI PANE -->
@@ -1826,7 +1872,10 @@
                     </div>
 
                     <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">OpenAI API Key</label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label class="form-label" style="margin-bottom: 0;">OpenAI API Key</label>
+                            <button type="button" class="btn-clear-key" id="btn-del-key-openai" style="display: none;" onclick="deleteProviderKey('openai')">🗑️ Clear Key</button>
+                        </div>
                         <div class="key-input-wrapper">
                             <input type="password" id="key-input-openai" class="form-input" placeholder="sk-proj-...">
                             <button type="button" id="eye-btn-openai" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-openai', 'eye-btn-openai')">👁️</button>
@@ -1834,7 +1883,10 @@
                     </div>
 
                     <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Model Presets</label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label class="form-label" style="margin-bottom: 0;">Model Presets</label>
+                            <button type="button" class="btn-reset-model" onclick="resetProviderModel('openai')">↺ Default</button>
+                        </div>
                         <select class="form-input" onchange="onPresetSelect('openai', this.value)" style="margin-bottom: 6px;">
                             <option value="">-- Choose preset model --</option>
                             <option value="gpt-4o-mini">gpt-4o-mini (Fast &amp; Cost-Efficient)</option>
@@ -1843,11 +1895,9 @@
                         <input type="text" id="model-input-openai" class="form-input" value="gpt-4o-mini" placeholder="Model identifier">
                     </div>
 
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-action" onclick="testProviderConnection('openai')">🔌 Test Connection</button>
-                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('openai')">⭐ Set Active</button>
+                    <div style="margin-top: 10px;">
+                        <button type="button" class="btn-action" style="width: 100%;" onclick="setActiveProviderFromModal('openai')">⭐ Set as Active Engine</button>
                     </div>
-                    <div id="test-result-openai" class="test-result-box"></div>
                 </div>
 
                 <!-- 3. GEMINI PANE -->
@@ -1883,7 +1933,10 @@
                     </div>
 
                     <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Google Gemini API Key</label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label class="form-label" style="margin-bottom: 0;">Google Gemini API Key</label>
+                            <button type="button" class="btn-clear-key" id="btn-del-key-gemini" style="display: none;" onclick="deleteProviderKey('gemini')">🗑️ Clear Key</button>
+                        </div>
                         <div class="key-input-wrapper">
                             <input type="password" id="key-input-gemini" class="form-input" placeholder="AIzaSy...">
                             <button type="button" id="eye-btn-gemini" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-gemini', 'eye-btn-gemini')">👁️</button>
@@ -1891,7 +1944,10 @@
                     </div>
 
                     <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Model Presets</label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label class="form-label" style="margin-bottom: 0;">Model Presets</label>
+                            <button type="button" class="btn-reset-model" onclick="resetProviderModel('gemini')">↺ Default</button>
+                        </div>
                         <select class="form-input" onchange="onPresetSelect('gemini', this.value)" style="margin-bottom: 6px;">
                             <option value="">-- Choose preset model --</option>
                             <option value="gemini-1.5-flash">gemini-1.5-flash (Recommended)</option>
@@ -1900,11 +1956,9 @@
                         <input type="text" id="model-input-gemini" class="form-input" value="gemini-1.5-flash" placeholder="Model identifier">
                     </div>
 
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-action" onclick="testProviderConnection('gemini')">🔌 Test Connection</button>
-                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('gemini')">⭐ Set Active</button>
+                    <div style="margin-top: 10px;">
+                        <button type="button" class="btn-action" style="width: 100%;" onclick="setActiveProviderFromModal('gemini')">⭐ Set as Active Engine</button>
                     </div>
-                    <div id="test-result-gemini" class="test-result-box"></div>
                 </div>
 
                 <!-- 4. NVIDIA NIM PANE -->
@@ -1940,7 +1994,10 @@
                     </div>
 
                     <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">NVIDIA API Key</label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label class="form-label" style="margin-bottom: 0;">NVIDIA API Key</label>
+                            <button type="button" class="btn-clear-key" id="btn-del-key-nim" style="display: none;" onclick="deleteProviderKey('nim')">🗑️ Clear Key</button>
+                        </div>
                         <div class="key-input-wrapper">
                             <input type="password" id="key-input-nim" class="form-input" placeholder="nvapi-...">
                             <button type="button" id="eye-btn-nim" class="btn-toggle-eye" onclick="toggleKeyVisibility('key-input-nim', 'eye-btn-nim')">👁️</button>
@@ -1953,15 +2010,16 @@
                     </div>
 
                     <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Model Presets</label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label class="form-label" style="margin-bottom: 0;">Model Presets</label>
+                            <button type="button" class="btn-reset-model" onclick="resetProviderModel('nim')">↺ Default</button>
+                        </div>
                         <input type="text" id="model-input-nim" class="form-input" value="meta/llama-3.1-70b-instruct" placeholder="Model identifier">
                     </div>
 
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" class="btn-action" onclick="testProviderConnection('nim')">🔌 Test Connection</button>
-                        <button type="button" class="btn-action" onclick="setActiveProviderFromModal('nim')">⭐ Set Active</button>
+                    <div style="margin-top: 10px;">
+                        <button type="button" class="btn-action" style="width: 100%;" onclick="setActiveProviderFromModal('nim')">⭐ Set as Active Engine</button>
                     </div>
-                    <div id="test-result-nim" class="test-result-box"></div>
                 </div>
             </div>
 
@@ -2626,6 +2684,21 @@
                 const info = data.providers[prov];
                 if (!info) return;
 
+                const delBtn = document.getElementById(`btn-del-key-${prov}`);
+                if (delBtn) {
+                    delBtn.style.display = info.configured ? 'inline-flex' : 'none';
+                }
+
+                const keyInput = document.getElementById(`key-input-${prov}`);
+                if (keyInput) {
+                    if (info.configured && info.api_key) {
+                        keyInput.value = info.api_key;
+                    } else {
+                        keyInput.value = '';
+                    }
+                    keyInput.placeholder = prov === 'groq' ? 'Enter gsk_...' : (prov === 'openai' ? 'sk-proj-...' : (prov === 'gemini' ? 'AIzaSy...' : 'nvapi-...'));
+                }
+
                 const badge = document.getElementById(`badge-cfg-${prov}`);
                 if (badge) {
                     if (info.configured) {
@@ -2764,6 +2837,37 @@
                 onProviderSelectChanged(prov);
             }
             showToast(`Selected ${prov.toUpperCase()} as active provider.`);
+        }
+
+        async function deleteProviderKey(prov) {
+            if (!confirm(`Are you sure you want to delete and clear the stored API key for ${prov.toUpperCase()} from your .env file?`)) {
+                return;
+            }
+            try {
+                const res = await fetch(apiUrl(`/api/v1/config/llm/${prov}/key`), {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Failed to delete key');
+                showToast(`🗑️ ${data.message}`);
+                await fetchLLMConfig();
+            } catch (err) {
+                showToast(`❌ Error deleting key: ${err.message}`);
+            }
+        }
+
+        async function resetProviderModel(prov) {
+            try {
+                const res = await fetch(apiUrl(`/api/v1/config/llm/${prov}/reset-model`), {
+                    method: 'POST'
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Failed to reset model');
+                showToast(`↺ Model reset to default: ${data.model}`);
+                await fetchLLMConfig();
+            } catch (err) {
+                showToast(`❌ Error resetting model: ${err.message}`);
+            }
         }
 
         async function saveLLMConfig() {

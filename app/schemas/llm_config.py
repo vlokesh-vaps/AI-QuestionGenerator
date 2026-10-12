@@ -6,6 +6,7 @@ class ProviderConfigItem(BaseModel):
     configured: bool
     model: str
     masked_key: Optional[str] = None
+    api_key: Optional[str] = None
     base_url: Optional[str] = None
 
 
@@ -40,3 +41,16 @@ class TestConnectionResponse(BaseModel):
     model: str
     message: str
     details: Optional[str] = None
+
+
+class DeleteKeyResponse(BaseModel):
+    success: bool
+    provider: str
+    message: str
+
+
+class ResetModelResponse(BaseModel):
+    success: bool
+    provider: str
+    model: str
+    message: str

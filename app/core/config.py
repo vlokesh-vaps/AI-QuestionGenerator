@@ -18,10 +18,10 @@ class Settings(BaseSettings):
     APPLICATION_ROOT: str = ""
     URL_PREFIX: str = ""
     PUBLIC_ORIGIN: str = ""
-    TRUSTED_PROXIES: List[str] = ["*"]
+    TRUSTED_PROXIES: Union[List[str], str] = ["*"]
     MAX_UPLOAD_SIZE_MB: int = 50
     MAX_FILE_SIZE_MB: int = 50
-    CORS_ORIGINS: List[str] = ["*"]
+    CORS_ORIGINS: Union[List[str], str] = ["*"]
 
     # Base Directory
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
