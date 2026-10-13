@@ -2096,10 +2096,18 @@
         document.addEventListener('DOMContentLoaded', () => {
             const docsLink = document.getElementById('link-docs');
             if (docsLink) docsLink.href = apiUrl('/docs');
+            resolveStaticImages();
             renderSections();
             setupDropzone();
             fetchLLMConfig();
         });
+
+        function resolveStaticImages() {
+            document.querySelectorAll('img[src^="static/"]').forEach(img => {
+                const origSrc = img.getAttribute('src');
+                img.src = apiUrl('/' + origSrc);
+            });
+        }
 
         // ----------------------------------------------------
         // File Upload & Marker Scanning
@@ -2651,10 +2659,10 @@
         }
 
         const providerLogos = {
-            groq: 'static/Groq.png',
-            openai: 'static/chatgpt.png',
-            gemini: 'static/gemini.jpg',
-            nim: 'static/nvidia.png'
+            get groq() { return apiUrl('/static/Groq.png'); },
+            get openai() { return apiUrl('/static/chatgpt.png'); },
+            get gemini() { return apiUrl('/static/gemini.jpg'); },
+            get nim() { return apiUrl('/static/nvidia.png'); }
         };
 
         function applyConfigToUI(data) {

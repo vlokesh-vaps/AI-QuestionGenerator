@@ -121,17 +121,17 @@ class ReverseProxyPrefixMiddleware:
 
         scope["root_path"] = active_prefix
 
-        # 4. Strip prefix from scope['path'] if present
+        # 4. Synchronize scope['path'] with active_prefix for Starlette Mount/StaticFiles
         current_path = scope.get("path", "/")
         if active_prefix:
-            if current_path == active_prefix:
-                current_path = "/"
-            elif current_path.startswith(active_prefix + "/"):
-                current_path = current_path[len(active_prefix):]
+            if not current_path.startswith(active_prefix + "/") and current_path != active_prefix:
+                clean_rel = current_path if current_path.startswith("/") else f"/{current_path}"
+                current_path = f"{active_prefix}{clean_rel}"
 
-        # 5. Trailing-slash normalization (unless root path "/")
+        # 5. Trailing-slash normalization (unless root path "/" or mount root)
         if len(current_path) > 1 and current_path.endswith("/"):
-            current_path = current_path.rstrip("/")
+            if not (active_prefix and current_path == f"{active_prefix}/"):
+                current_path = current_path.rstrip("/")
 
         scope["path"] = current_path
         scope["raw_path"] = current_path.encode("latin-1")

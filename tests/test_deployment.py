@@ -186,3 +186,18 @@ class TestFrontendAssetAndApiSanity:
         assert "fetch('/api/v1/exam-papers/generate-async'" not in html
         assert "fetch('/api/exam/generate-questions'" not in html
         assert "fetch('/api/v1/config/llm'" not in html
+        assert "resolveStaticImages()" in html
+
+    def test_prefixed_static_asset_serving(self):
+        """Verify static files (brand logos) load correctly through reverse proxy prefix."""
+        headers = {"x-forwarded-prefix": "/question-paper"}
+        
+        # Test prefixed URL
+        res = client.get("/question-paper/static/Groq.png", headers=headers)
+        assert res.status_code == 200
+        assert "image/png" in res.headers["content-type"]
+
+        # Test other logos
+        for asset in ["chatgpt.png", "gemini.jpg", "nvidia.png"]:
+            res = client.get(f"/question-paper/static/{asset}", headers=headers)
+            assert res.status_code == 200
